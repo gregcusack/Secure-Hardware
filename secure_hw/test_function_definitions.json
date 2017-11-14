@@ -1,0 +1,21 @@
+{
+  "trusted": [
+  	{
+  		"name":"toggle_case",
+  		"intputs" : [
+  			{
+  				"name":"input",
+  				"type":"unsigned char",
+  				"length":16
+  			}
+  		],
+  		"outputs" : [
+  			{
+  				"name":"output",
+  				"type":"unsigned char",
+  				"length":16
+  			}
+  		]
+  	}
+  ]
+}
