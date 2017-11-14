@@ -1,0 +1,1 @@
+void toggle_case(unsigned char* input, unsigned char* output);
