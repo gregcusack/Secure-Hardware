@@ -2,7 +2,7 @@
   "trusted": [
   	{
   		"name":"toggle_case",
-  		"intputs" : [
+  		"inputs" : [
   			{
   				"name":"input",
   				"type":"unsigned char",
