@@ -1,0 +1,1 @@
+int accounts_set_password(uint32_t idx, const unsigned char* pass);
