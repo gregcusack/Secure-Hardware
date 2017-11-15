@@ -10,12 +10,12 @@ unsigned char key[crypto_secretbox_KEYBYTES];
 unsigned char ciphertext[CIPHERTEXT_LEN];
 
 int main(int argc, char** argv) {
-
+/*
 	if(sodium_init() == -1) {
 		printf("error\n");
 		return 1;
 	}
-
+*/
 	/* Generate a secure random key and nonce */
 	randombytes_buf(nonce, sizeof nonce);
 	randombytes_buf(key, sizeof key);
@@ -32,4 +32,5 @@ int main(int argc, char** argv) {
 		printf("Cipher text: %s\n", ciphertext);
 		printf("Decrypted ciphertext: %s\n", decrypted);
 	}
+	printf("length: %d\n%d\n%d\n", crypto_secretbox_KEYBYTES, crypto_secretbox_NONCEBYTES, CIPHERTEXT_LEN);
 }
