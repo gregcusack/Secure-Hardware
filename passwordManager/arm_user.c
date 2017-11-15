@@ -2,8 +2,8 @@
 #include "mb_enclave.h"
 
 int main(int argc, char** argv) {
-	unsigned char* p = (unsigned char*)"Greg";
-	uint32_t a = 4;
+	unsigned char p[] = "Hello World";
+	uint32_t a = 11;
 	uint32_t* p_len = &a;
 	unsigned char cipher_p[*p_len];
 	uint32_t* cp_len;

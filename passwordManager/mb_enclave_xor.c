@@ -1,13 +1,15 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "mb_enclave_xor.h"
 
 /* generate random string for cipher key */
-void rand_string(unsigned char *str, uint32_t size) {
+void rand_string(unsigned char *str, uint16_t size) {
     const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+=-][{}';\":?><,./;`~";
     if (size) {
         --size;
-        for (size_t n = 0; n < size; n++) {
+        for (uint16_t n = 0; n < size; n++) {
             int key = rand() % (int) (sizeof charset - 1);
             str[n] = charset[key];
         }
@@ -16,8 +18,8 @@ void rand_string(unsigned char *str, uint32_t size) {
 }
 
 /* Basic XOR cipher */
-void encrypt_password(unsigned char* p, uint32_t* p_len, 
-	unsigned char* ciphertext, uint32_t* cp_len) {
+void encrypt_password(unsigned char* p, uint16_t* p_len,
+	unsigned char* ciphertext) {
 
 	srand(time(0));
 	unsigned char key[*p_len];
@@ -32,8 +34,5 @@ void encrypt_password(unsigned char* p, uint32_t* p_len,
  	}
 	printf("Cipher text: %s\n", ciphertext);
 	printf("Decrypted ciphertext: %s\n", decrypted);
-	p = NULL;
-
+	memset(p,0,*p_len); //remove access to password from untrusted function
 }
-
-//another idea, use srand to generate a key and then XOR that key with your string

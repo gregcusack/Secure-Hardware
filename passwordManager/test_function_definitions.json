@@ -1,0 +1,26 @@
+{
+  "trusted": [
+    {
+      "name" : "encrypt_password",
+      "inputs" : [
+        {
+          "name":"p",
+          "type":"unsigned char",
+          "length":"32"
+        }
+        {
+          "name":"p_len",
+          "type":"uint16_t",
+          "length":"16"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"ciphertext",
+          "type":"unsigned char",
+          "length":"32",
+        }
+      ]
+    }
+  ]
+}
