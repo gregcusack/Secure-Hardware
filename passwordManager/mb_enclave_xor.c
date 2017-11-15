@@ -24,10 +24,10 @@ void encrypt_password(unsigned char* p, uint16_t* p_len,
 	unsigned char* ciphertext) {
 
 	unsigned char *key = "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0\0";
-
-	srand(time(0));
+	//srand(time(0));
 	//unsigned char key[*p_len];
 	//rand_string(key, *p_len);
+	
 	unsigned char decrypted[*p_len];
 
 	for(int i=0; i < *p_len; i++) {

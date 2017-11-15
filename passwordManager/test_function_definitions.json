@@ -11,7 +11,7 @@
         {
           "name":"p_len",
           "type":"uint16_t",
-          "length":"16"
+          "length":"4"
         }
       ],
       "outputs" : [
