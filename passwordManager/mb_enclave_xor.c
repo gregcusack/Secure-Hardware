@@ -12,7 +12,9 @@ void rand_string(unsigned char *str, uint16_t size) {
         for (uint16_t n = 0; n < size; n++) {
             int key = rand() % (int) (sizeof charset - 1);
             str[n] = charset[key];
+            //printf("%c", str[n]);
         }
+        //printf("\n");
         str[size] = '\0';
     }
 }
@@ -21,9 +23,11 @@ void rand_string(unsigned char *str, uint16_t size) {
 void encrypt_password(unsigned char* p, uint16_t* p_len,
 	unsigned char* ciphertext) {
 
+	unsigned char *key = "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0\0";
+
 	srand(time(0));
-	unsigned char key[*p_len];
-	rand_string(key, *p_len);
+	//unsigned char key[*p_len];
+	//rand_string(key, *p_len);
 	unsigned char decrypted[*p_len];
 
 	for(int i=0; i < *p_len; i++) {
