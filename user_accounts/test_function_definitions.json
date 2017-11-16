@@ -1,0 +1,53 @@
+{
+  "trusted": [
+    {
+      "name" : "create_user",
+      "inputs" : [
+        {
+          "name":"user_data",
+          "type":"user_account",
+          "length":"32"
+        }
+        {
+          "name":"pword_len",
+          "type":"uint16_t",
+          "length":"4"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"user_cipher",
+          "type":"user_account",
+          "length":"32",
+        }
+      ]
+    },
+    {
+      "name" : "check_user",
+      "inputs" : [
+        {
+          "name":"cipher_data",
+          "type":"user_account",
+          "length":"32"
+        }
+        {
+          "name":"pword_len",
+          "type":"uint16_t",
+          "length":"4"
+        }
+        {
+          "name":"login_attempt",
+          "type":"user_account",
+          "length":"32"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"found",
+          "type":"uint16_t",
+          "length":"4",
+        }
+      ]
+    }
+  ]
+}

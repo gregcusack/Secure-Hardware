@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 	//Get user from file (look up by username)
 	user_account from_db;
 	if(get_user(&login_user, &from_db)) {
-		uint8_t found = false;
+		uint16_t found = false;
 		/* Pass login info (uname/pword) and looked up info (uname/encryted pword)
 		 * Send to MB 
 		 */

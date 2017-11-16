@@ -30,7 +30,7 @@ void create_user(user_account *user_data, uint16_t *pword_len,
 }
 
 void check_user(user_account *cipher_data, uint16_t *pword_len, 
-	user_account *login_attempt, uint8_t *found) {
+	user_account *login_attempt, uint16_t *found) {
 
 	unsigned char decrypted[*pword_len];
 	decrypt(cipher_data->pword, *pword_len, decrypted);
