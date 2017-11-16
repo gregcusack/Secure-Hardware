@@ -10,12 +10,11 @@
 #define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0\0")
 
 void encrypt(user_account *input_user, uint16_t size, user_account *ret_user) {
-	//unsigned char *key = "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0\0";
-	for(uint16_t i=0; i < size; i++) {
+	for(uint16_t i=0; i < size - 1; i++) {
 		ret_user->pword[i] = input_user->pword[i]^KEY[i];
 		ret_user->uname[i] = input_user->uname[i];
-		//cipher_p[i] = password[i]^KEY[i];
 	}
+	ret_user->pword[size-1] = '\0';
 	memset(input_user->pword, 0, size);
 }
 
@@ -34,7 +33,6 @@ void check_user(user_account *cipher_data, uint16_t *pword_len,
 	user_account *login_attempt, uint8_t *found) {
 
 	unsigned char decrypted[*pword_len];
-
 	decrypt(cipher_data->pword, *pword_len, decrypted);
 	if(!(strcmp(decrypted,login_attempt->pword))) {
 		*found = true;
@@ -42,13 +40,5 @@ void check_user(user_account *cipher_data, uint16_t *pword_len,
 	else {
 		*found = false;
 	}
-	/*
-	for(int i=0; i<*pword_len; i++) {
-		if(decrypted[i] != login_attempt->pword[i]) {
-			*found = false;
-			break;
-		}
-	}
-	*/
 }
 
