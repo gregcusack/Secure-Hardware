@@ -72,8 +72,8 @@ int main(int argc, char** argv) {
 		scanf("%s",user_create.pword);
 		getchar();
 		//printf("user_create: %s, %s\n", user_create.uname, user_create.pword);
-		uint16_t a = BUFF_SIZE;
-		uint16_t *size = &a;
+		uint32_t a = BUFF_SIZE;
+		uint32_t *size = &a;
 		user_account user_store;
 		create_user(&user_create, size, &user_store);
 		store_user(&user_store);

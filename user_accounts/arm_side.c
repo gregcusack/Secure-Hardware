@@ -59,8 +59,8 @@ int main(int argc, char** argv) {
 	printf("input username: %s\n", user1.uname);
 	printf("input password: %s\n", user1.pword);
 
-	uint16_t a = BUFF_SIZE;
-	uint16_t *size = &a;
+	uint32_t a = BUFF_SIZE;
+	uint32_t *size = &a;
 	user_account user_store;
 
 	/* Send user to MB, MB encrypt password
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 	//Get user from file (look up by username)
 	user_account from_db;
 	if(get_user(&login_user, &from_db)) {
-		uint16_t found = false;
+		uint32_t found = false;
 		/* Pass login info (uname/pword) and looked up info (uname/encryted pword)
 		 * Send to MB 
 		 */
