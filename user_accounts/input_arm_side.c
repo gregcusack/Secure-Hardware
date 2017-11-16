@@ -54,6 +54,8 @@ bool get_user(user_account *input, user_account *output) {
 
 
 int main(int argc, char** argv) {
+	uint32_t a = BUFF_SIZE;
+	uint32_t *size = &a;
 	printf("Create account or login? (C/L): ");
 	char c;
 	scanf(" %c", &c);
@@ -62,7 +64,7 @@ int main(int argc, char** argv) {
 		printf("Bad input, run again\n");
 		exit(1);
 	}
-	else if (c == 'C' || c == 'c') {
+	else if(c == 'C' || c == 'c') {
 		user_account user_create;
 		printf("Create account!\n");
 		printf("Enter username: ");
@@ -72,58 +74,31 @@ int main(int argc, char** argv) {
 		scanf("%s",user_create.pword);
 		getchar();
 		//printf("user_create: %s, %s\n", user_create.uname, user_create.pword);
-		uint32_t a = BUFF_SIZE;
-		uint32_t *size = &a;
 		user_account user_store;
 		create_user(&user_create, size, &user_store);
 		store_user(&user_store);
 		return 0;
 	}
-/*
-	//user1: used to create account
-	user_account user1 = {"username", "passW0rd!"};
-	//login_user: used like a user trying to login to the system
-	user_account login_user = {"username", "passW0rd!"};
-
-	printf("input username: %s\n", user1.uname);
-	printf("input password: %s\n", user1.pword);
-
-	uint16_t a = BUFF_SIZE;
-	uint16_t *size = &a;
-	user_account user_store;
-*/
-	/* Send user to MB, MB encrypt password
-	 * MB remove access to pass
-	 * MB returns structure with username and encrypted password
-	 */
-//	create_user(&user1, size, &user_store);
-
-	/* Check to see that ARM no longer has access to input uname/pword combo */
-	//printf("username (should see username): %s\n", user1.uname);
-	//printf("password (should be empty): %s\n", user1.pword);
-/*
-	printf("returned username to store: %s\n", user_store.uname);
-	printf("returned password to store: %s\n", user_store.pword);
-
-	//store username/encrypted password in file in untrusted storage
-	store_user(&user_store);
-
-	//Get user from file (look up by username)
-	user_account from_db;
-	if(get_user(&login_user, &from_db)) {
-		uint16_t found = false;
-*/		/* Pass login info (uname/pword) and looked up info (uname/encryted pword)
-		 * Send to MB 
-		 */
-/*		check_user(&from_db, size, &login_user, &found);
-		if(found)
-			printf("User found!\n");
-		else
+	else if(c == 'L' || c == 'l') {
+		user_account login, user_from_db;
+		printf("Login to account.\n");
+		printf("Enter Username: ");
+		scanf("%s",login.uname);
+		getchar();
+		printf("Enter password: ");
+		scanf("%s", login.pword);
+		getchar();
+		if(get_user(&login, &user_from_db)) {
+			uint32_t found = false;
+			check_user(&user_from_db, size, &login, &found);
+			if(found)
+				printf("User found!\n");
+			else
+				printf("Invalid username or password\n");
+		}
+		else {
 			printf("Invalid username or password\n");
+		}
 	}
-	else {
-		printf("Invalid username or password\n");
-	}
-*/
 	return 0;
 }
