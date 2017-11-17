@@ -39,7 +39,7 @@ bool get_user(user_account *input, user_account *output) {
 	}
 	bool found_flag = false;
 	while(fread(output, sizeof(struct user_account), 1, infile)) {
-		if(!(strcmp(input->uname,output->uname))) {
+		if(!(strcmp(input->m_uname,output->m_uname))) {
 			found_flag = true;
 			break;
 		}
@@ -68,10 +68,10 @@ int main(int argc, char** argv) {
 		user_account user_create;
 		printf("Create account!\n");
 		printf("Enter username: ");
-		scanf("%s",user_create.uname);
+		scanf("%s",user_create.m_uname);
 		getchar();
 		printf("Enter password: ");
-		scanf("%s",user_create.pword);
+		scanf("%s",user_create.m_pword);
 		getchar();
 		//printf("user_create: %s, %s\n", user_create.uname, user_create.pword);
 		user_account user_store;
@@ -83,10 +83,10 @@ int main(int argc, char** argv) {
 		user_account login, user_from_db;
 		printf("Login to account.\n");
 		printf("Enter Username: ");
-		scanf("%s",login.uname);
+		scanf("%s",login.m_uname);
 		getchar();
 		printf("Enter password: ");
-		scanf("%s", login.pword);
+		scanf("%s", login.m_pword);
 		getchar();
 		if(get_user(&login, &user_from_db)) {
 			uint32_t found = false;
