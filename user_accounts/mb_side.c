@@ -7,7 +7,7 @@
 #include "mbside.h"
 #endif
 
-#define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0\0")
+#define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0:\0")
 
 void encrypt_m_pword(user_account *input_user, uint32_t size, user_account *ret_user) {
 	for(uint16_t i=0; i < size - 1; i++) {
@@ -18,14 +18,26 @@ void encrypt_m_pword(user_account *input_user, uint32_t size, user_account *ret_
 	memset(input_user->m_pword, 0, size);
 }
 
-void encrypt_login(user_account *input_user, uint32_t size_new_account, 
+void encrypt_login(user_account *input_user, uint32_t size, 
 	user_account *ret_user) {
-	for(uint8_t i=0;i<size_new_account;i++) {
-		
+	for(uint8_t i=0;i<size;i++) {
+		ret_user->accounts[ret_user->num_accounts].web_name[i] = input_user->accounts[input_user->num_accounts].web_name[i]^KEY[i];
+		ret_user->accounts[ret_user->num_accounts].credentials.a_uname[i] = input_user->accounts[input_user->num_accounts].credentials.a_uname[i]^KEY[i];
+		ret_user->accounts[ret_user->num_accounts].credentials.a_pword[i] = input_user->accounts[input_user->num_accounts].credentials.a_pword[i]^KEY[i];
 	}
+	//not totally sure if i need to do this
+	ret_user->accounts[ret_user->num_accounts].web_name[size-1] = '\0';
+	ret_user->accounts[ret_user->num_accounts].credentials.a_uname[size-1] = '\0';
+	ret_user->accounts[ret_user->num_accounts].credentials.a_pword[size-1] = '\0';
+	//remove access to user account from ARM
+	memset(input_user->m_pword,0,size);
+	input_user->num_accounts = 0;  //
+	memset(input_user->accounts[ret_user->num_accounts].web_name, 0, size);
+	memset(input_user->accounts[ret_user->num_accounts].credentials.a_uname, 0, size);
+	memset(input_user->accounts[ret_user->num_accounts].credentials.a_pword, 0, size);
 }
 
-void decryptm_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decrypted) {
+void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decrypted) {
 	for(uint32_t i=0; i < size; i++) {
 		decrypted[i] = cipher_p[i]^KEY[i];
 	}

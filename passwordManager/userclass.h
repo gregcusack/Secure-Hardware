@@ -19,6 +19,10 @@ typedef struct user_account {	//276
 	uint32_t num_accounts;// = 0;		//4 bytes
 } user_account;
 
+typedef struct login_struct {
+	unsigned char l_uname[BUFF_SIZE];
+	unsigned char l_pword[BUFF_SIZE];
+} login_struct;
 
 /* User struct
  * username
