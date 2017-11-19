@@ -1,0 +1,107 @@
+{
+  "trusted": [
+    {
+      "name" : "create_user",
+      "inputs" : [
+        {
+          "name":"user_data",
+          "type":"user_account",
+          "length":"276"
+        }
+        {
+          "name":"pword_len",
+          "type":"uint32_t",
+          "length":"4"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"user_cipher",
+          "type":"user_account",
+          "length":"276",
+        }
+      ]
+    },
+    {
+      "name" : "check_user",
+      "inputs" : [
+        {
+          "name":"login_attempt",
+          "type":"login_struct",
+          "length":"32"
+        }
+        {
+          "name":"size",
+          "type":"uint32_t",
+          "length":"4"
+        }
+        {
+          "name":"cipher_data",
+          "type":"user_account",
+          "length":"32"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"found",
+          "type":"uint32_t",
+          "length":"4",
+        }
+      ]
+    },
+    {
+      "name" : "encrypt_credentials",
+      "inputs" : [
+        {
+          "name":"user_cred",
+          "type":"website",
+          "length":"48"
+        }
+        {
+          "name":"size",
+          "type":"uint32_t",
+          "length":"4"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"encrytped_user_cred",
+          "type":"website",
+          "length":"48",
+        }
+      ]
+    },
+    {
+      "name" : "return_credentials",
+      "inputs" : [
+        {
+          "name":"user",
+          "type":"user_account",
+          "length":"276"
+        }
+        {
+          "name":"user_cred",
+          "type":"website",
+          "length":"48"
+        }
+        {
+          "name":"size",
+          "type":"uint32_t",
+          "length":"4"
+        }
+      ],
+      "outputs" : [
+        {
+          "name":"ret_cred",
+          "type":"website",
+          "length":"48",
+        }
+        {
+          "name":"cred_found",
+          "type":"uint32_t",
+          "length":"4",
+        }
+      ]
+    }
+  ]
+}
