@@ -17,22 +17,69 @@
 #include <string.h>
 #include <stdlib.h>
 
+void print_vault(vault *vault) {
+	printf("Vault: num_users: %d\n", vault->num_users);
+	for(int i=0; i < MAX_USERS; i++) {
+		printf("Username: %s\n", vault->user_store[i].m_uname);
+		printf("Password: %s\n", vault->user_store[i].m_pword);
+		printf("Num accounts: %d\n", vault->user_store[i].num_accounts);
+		for(int j=0; j < MAX_ACCOUNTS; j++) {
+			printf("Website: %s\n", vault->user_store[i].accounts[j].web_name);
+			printf("Web username: %s\n", vault->user_store[i].accounts[j].credentials.a_uname);
+			printf("Web password: %s\n", vault->user_store[i].accounts[j].credentials.a_pword);
+		}
+	}
+}
+
+bool write_vault(vault *vault) {
+	FILE *f = fopen("test.dat", "w+"); //will need to be changed to w+
+	if(f == NULL) {
+		fprintf(stderr, "\nError in file open (write)\n");
+		exit(1);
+	}
+	fwrite(vault, sizeof(struct vault), 1, f);
+	fclose(f);
+	return true;
+}
+
+bool read_vault(vault *vault) {
+	FILE *infile;
+	infile = fopen("test.dat","a+");
+	if(infile == NULL) {
+		fprintf(stderr, "\nError in file open (read)\n");
+		exit(1);
+	}
+	if(!fread(vault, sizeof(struct vault), 1, infile)) {
+		fclose(infile);
+		return false; //file is emtpy
+	}
+	//printf("vault user: %s\n", vault->user_store[vault->num_users].m_uname);
+	fclose(infile);
+	return true;
+}
+
 bool vault_store_user(vault *vault, user_account *store) {
 	if(vault->num_users >= MAX_USERS) {
 		return false;
 	}
+	//printf("num users in vault: %d\n", vault->num_users);
 	vault->user_store[vault->num_users] = *store;
-	printf("uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
-	printf("pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
+	//printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
+	//printf("vault_store_user: pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
 	vault->num_users++;
+	//printf("num users in vault after store: %d\n", vault->num_users);
 	return true;
 }
 
 int32_t search_vault(vault *vault, login_struct *login_attempt) {
+	//printf("search vault: Num vault users: %d\n", vault->num_users);
 	if(vault->num_users == 0) {
+		//printf("no vault users rn.\n");
 		return -1;
 	}
 	for(uint32_t i = 0; i < vault->num_users; i++) {
+		//printf("login attempt: %s\n", login_attempt->l_uname);
+		//printf("vault_store_user: %s\n", vault->user_store[i].m_uname);
 		if(!strcmp(login_attempt->l_uname, vault->user_store[i].m_uname)) {
 			return i;
 		}
@@ -41,7 +88,7 @@ int32_t search_vault(vault *vault, login_struct *login_attempt) {
 }
 
 void create_account(user_account *new_user, uint32_t *size, user_account *user_store) {
-	printf("Create account!\n");
+	printf("Create account\n");
 	printf("Enter username: ");
 	scanf("%s",new_user->m_uname);
 	getchar();
@@ -50,8 +97,8 @@ void create_account(user_account *new_user, uint32_t *size, user_account *user_s
 	getchar();
 	new_user->num_accounts = 0;
 	create_user(new_user, size, user_store); //need lock
-	printf("user_store: uname: %s, pword: %s\n", user_store->m_uname, user_store->m_pword);
-	printf("new_user: uname: %s, pword: %s\n", new_user->m_uname, new_user->m_pword);
+	//printf("user_store: uname: %s, pword: %s\n", user_store->m_uname, user_store->m_pword);
+	//printf("new_user: uname: %s, pword: %s\n", new_user->m_uname, new_user->m_pword);
 }
 
 void login(login_struct *login_attempt) {
@@ -98,7 +145,7 @@ void add_credentials(website *new_cred) {
 }
 
 void get_credentials(website *get_cred) {
-	printf("Enter website name for your respective login credentials: ");
+	printf("Enter website name to get credentials: ");
 	scanf("%s",get_cred->web_name);
 	getchar();
 }
@@ -106,10 +153,13 @@ void get_credentials(website *get_cred) {
 
 int main(int argc, char** argv) {
 	vault vault;
-	vault.num_users = 0;
 	uint32_t a = BUFF_SIZE;
 	uint32_t *size = &a;
 	while (1) {
+		if(!read_vault(&vault)) {
+			vault.num_users = 0;
+			//printf("Vault empty\n");
+		}
 		user_account input, user_store;
 		login_struct login_attempt;
 		printf("Create account or login? (C/L): ");
@@ -126,13 +176,15 @@ int main(int argc, char** argv) {
 				else {
 					printf("Successfully added user\n");
 				}
+				write_vault(&vault);
+				//print_vault(&vault);
 				break;
 			case 'l':
 			case 'L': {
 					login(&login_attempt);
 					int32_t index = search_vault(&vault, &login_attempt);
 					if(index >= 0) {
-						printf("index: %d\n", index);
+						//printf("index: %d\n", index);
 						uint32_t found = false;
 						check_user(&login_attempt, size, &vault.user_store[index], &found); //need lock here
 						if(found) {
@@ -157,16 +209,21 @@ int main(int argc, char** argv) {
 								else if(k == 2) {
 									website encrypted_user_cred;
 									printf("Add credentials\n");
-									add_credentials(&user_cred);
-									encrypt_credentials(&user_cred, size, &encrypted_user_cred); //need lock
-									vault.user_store[index].accounts[vault.user_store[index].num_accounts] = encrypted_user_cred;
-									vault.user_store[index].num_accounts++;
-									
-									printf("user_account info. website name: %s, web uname: %s, web pword %s\n", 
-										vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].web_name,
-										vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].credentials.a_uname,
-										vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].credentials.a_pword);
-									
+									if(vault.user_store[index].num_accounts < MAX_ACCOUNTS) {
+										add_credentials(&user_cred);
+										encrypt_credentials(&user_cred, size, &encrypted_user_cred); //need lock
+										vault.user_store[index].accounts[vault.user_store[index].num_accounts] = encrypted_user_cred;
+										vault.user_store[index].num_accounts++;
+										write_vault(&vault);
+										
+										printf("user_account info. website name: %s, web uname: %s, web pword %s\n", 
+											vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].web_name,
+											vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].credentials.a_uname,
+											vault.user_store[index].accounts[vault.user_store[index].num_accounts-1].credentials.a_pword);
+									}
+									else {
+										printf("Max number of web credentials already added.  No more space.\n");
+									}
 								}
 								else {
 									printf("Error: Should not have made it here\n");
@@ -180,6 +237,12 @@ int main(int argc, char** argv) {
 					else {
 						printf("Invalid username or password\n");
 					}
+				break;
+			}
+			//For debugging
+			case 'p':
+			case 'P': {
+				print_vault(&vault);
 				break;
 			}
 			default:
