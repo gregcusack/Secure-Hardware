@@ -54,7 +54,7 @@ bool write_vault(vault *vault) {
 
 bool read_vault(vault *vault) {
 	FILE *infile;
-	infile = fopen("test.dat","a+");
+	infile = fopen("test.dat","r");
 	if(infile == NULL) {
 		fprintf(stderr, "\nError in file open (read)\n");
 		exit(1);
@@ -166,18 +166,29 @@ void thread_join(locks *lock) {
   	pthread_mutex_unlock(&(lock->m));
 }
 
+void create_vault() {
+	FILE *f;
+	f = fopen("test.dat","a+");
+	if(f == NULL) {
+		fprintf(stderr, "\nError in file open here(read)\n");
+		exit(1);
+	}
+	fclose(f);
+}
+
 int main(int argc, char** argv) {
 	locks lock;
 	pthread_mutex_t m;								//40 bytes		
 	pthread_cond_t cl = PTHREAD_COND_INITIALIZER;	//56 bytes
 	pthread_cond_t w = PTHREAD_COND_INITIALIZER;
+	create_vault();
 	vault vault;
 	uint32_t a = BUFF_SIZE;
 	uint32_t *size = &a;
 	while (1) {
 		if(!read_vault(&vault)) {
 			vault.num_users = 0;
-			//printf("Vault empty\n");
+			printf("Vault empty\n");
 		}
 		user_account input, user_store;
 		login_struct login_attempt;
