@@ -13,9 +13,19 @@
 #include "vault.h"
 #endif
 
+#ifndef PTHREAD_H
+#define PTHREAD_H
+#include <pthread.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+uint32_t done = 0;
+pthread_mutex_t m ;
+pthread_cond_t c = PTHREAD_COND_INITIALIZER;
+pthread_cond_t w = PTHREAD_COND_INITIALIZER;
 
 void print_vault(vault *vault) {
 	printf("Vault: num_users: %d\n", vault->num_users);
@@ -62,19 +72,19 @@ bool vault_store_user(vault *vault, user_account *store) {
 	if(vault->num_users >= MAX_USERS) {
 		return false;
 	}
-	//printf("num users in vault: %d\n", vault->num_users);
+	printf("num users in vault: %d\n", vault->num_users);
 	vault->user_store[vault->num_users] = *store;
-	//printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
-	//printf("vault_store_user: pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
+	printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
+	printf("vault_store_user: pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
 	vault->num_users++;
-	//printf("num users in vault after store: %d\n", vault->num_users);
+	printf("num users in vault after store: %d\n", vault->num_users);
 	return true;
 }
 
 int32_t search_vault(vault *vault, login_struct *login_attempt) {
 	//printf("search vault: Num vault users: %d\n", vault->num_users);
 	if(vault->num_users == 0) {
-		//printf("no vault users rn.\n");
+		printf("no vault users rn.\n");
 		return -1;
 	}
 	for(uint32_t i = 0; i < vault->num_users; i++) {
@@ -87,7 +97,7 @@ int32_t search_vault(vault *vault, login_struct *login_attempt) {
 	return -1;
 }
 
-void create_account(user_account *new_user, uint32_t *size, user_account *user_store) {
+void create_account(user_account *new_user) {
 	printf("Create account\n");
 	printf("Enter username: ");
 	scanf("%s",new_user->m_uname);
@@ -96,7 +106,6 @@ void create_account(user_account *new_user, uint32_t *size, user_account *user_s
 	scanf("%s",new_user->m_pword);
 	getchar();
 	new_user->num_accounts = 0;
-	create_user(new_user, size, user_store); //need lock
 	//printf("user_store: uname: %s, pword: %s\n", user_store->m_uname, user_store->m_pword);
 	//printf("new_user: uname: %s, pword: %s\n", new_user->m_uname, new_user->m_pword);
 }
@@ -150,8 +159,18 @@ void get_credentials(website *get_cred) {
 	getchar();
 }
 
+void thread_join(locks *lock) {
+	pthread_mutex_lock(&(lock->m));
+ 	while (lock->done == 0)
+  		pthread_cond_wait(&(lock->cl), &(lock->m));
+  	pthread_mutex_unlock(&(lock->m));
+}
 
 int main(int argc, char** argv) {
+	locks lock;
+	pthread_mutex_t m;								//40 bytes		
+	pthread_cond_t cl = PTHREAD_COND_INITIALIZER;	//56 bytes
+	pthread_cond_t w = PTHREAD_COND_INITIALIZER;
 	vault vault;
 	uint32_t a = BUFF_SIZE;
 	uint32_t *size = &a;
@@ -168,8 +187,27 @@ int main(int argc, char** argv) {
 		getchar();
 		switch(c) {
 			case 'c':
-			case 'C':
-				create_account(&input, size, &user_store);
+			case 'C': {
+				//pthread_t p;
+				create_account(&input);
+				/*
+				thread_args args;
+				args.u_acct_t = input;
+				args.size_th = *size;
+				args.u_store_t = user_store;
+				int rc;
+				rc = pthread_create(&p, NULL, &create_user, (void *)&args);
+				if(rc != 0) {
+					fprintf(stderr, "Failed to create creare_user thread. Exiting Program.\n");
+					exit(0);
+				}
+				*/
+				lock.done = 0;
+				lock.m = m;
+				lock.cl = cl;
+				lock.w = w;
+				create_user(&input, size, &user_store, &lock); //need lock
+				thread_join(&lock);
 				if(!vault_store_user(&vault, &user_store)) { //must wait for lock before calling this
 					printf("Error adding acound: max number of users (%d) reached\n", MAX_USERS);
 				}
@@ -177,8 +215,10 @@ int main(int argc, char** argv) {
 					printf("Successfully added user\n");
 				}
 				write_vault(&vault);
+				printf("vault user: %s\n", vault.user_store[0].m_uname);
 				//print_vault(&vault);
 				break;
+			}
 			case 'l':
 			case 'L': {
 					login(&login_attempt);
@@ -231,7 +271,7 @@ int main(int argc, char** argv) {
 							}
 						}
 						else {
-							printf("Invalid username or password\n");
+							printf("Invalid username or password1\n");
 						}
 					}
 					else {

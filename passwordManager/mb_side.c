@@ -24,11 +24,23 @@ void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decr
 	}
 }
 
+
 void create_user(user_account *user_data, uint32_t *size, 
-	user_account *user_cipher) {
+	user_account *user_cipher, locks *lock) {
+	pthread_mutex_lock(&(lock->m));
 	encrypt_m_pword(user_data, *size, user_cipher);
+	lock->done = 1;
+	pthread_cond_signal(&(lock->cl));
+	pthread_mutex_unlock(&(lock->m));
 }
 
+/*
+void *create_user(void *arguments) {
+	thread_args *args = arguments;
+	printf("args_user_account: %s\n", args->u_acct_t.m_uname);
+	encrypt_m_pword(&args->u_acct_t, args->size_th, &args->u_store_t);
+}
+*/
 void check_user(login_struct *login_attempt, uint32_t *size, user_account *cipher_data, uint32_t *found) {
 	unsigned char decrypted[*size];
 	decrypt_m_pword(cipher_data->m_pword, *size, decrypted);

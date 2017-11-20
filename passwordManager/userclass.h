@@ -2,6 +2,11 @@
 #define MAX_ACCOUNTS 5
 #include <stdint.h>
 
+#ifndef PTHREAD_H
+#define PTHREAD_H
+#include <pthread.h>
+#endif
+
 typedef struct web_login { //32 bytes
 	unsigned char a_uname[BUFF_SIZE]; //acount uname
 	unsigned char a_pword[BUFF_SIZE];
@@ -23,6 +28,21 @@ typedef struct login_struct {
 	unsigned char l_uname[BUFF_SIZE];
 	unsigned char l_pword[BUFF_SIZE];
 } login_struct;
+
+typedef struct locks { //156 bytes
+	uint32_t done;									//4 bytes
+	pthread_mutex_t m;								//40 bytes		
+	pthread_cond_t cl;	//56 bytes
+	pthread_cond_t w;	//56 bytes
+} locks;
+
+/*
+typedef struct thead_args {
+	user_account u_acct_t;
+	uint32_t size_th;
+	user_account u_store_t;
+} thread_args;
+*/
 
 /* User struct
  * username
