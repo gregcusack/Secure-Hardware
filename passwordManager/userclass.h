@@ -29,10 +29,9 @@ typedef struct login_struct {
 	unsigned char l_pword[BUFF_SIZE];
 } login_struct;
 
-typedef struct locks { //156 bytes
+typedef struct locks { //100 bytes
 	uint32_t done;									//4 bytes
 	pthread_mutex_t m;								//40 bytes		
-	pthread_cond_t cl;	//56 bytes
 	pthread_cond_t w;	//56 bytes
 } locks;
 

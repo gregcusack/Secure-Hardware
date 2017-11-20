@@ -72,19 +72,19 @@ bool vault_store_user(vault *vault, user_account *store) {
 	if(vault->num_users >= MAX_USERS) {
 		return false;
 	}
-	printf("num users in vault: %d\n", vault->num_users);
+	//printf("num users in vault: %d\n", vault->num_users);
 	vault->user_store[vault->num_users] = *store;
-	printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
-	printf("vault_store_user: pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
+	//printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
+	//printf("vault_store_user: pword in vault: %s\n", vault->user_store[vault->num_users].m_pword);
 	vault->num_users++;
-	printf("num users in vault after store: %d\n", vault->num_users);
+	//printf("num users in vault after store: %d\n", vault->num_users);
 	return true;
 }
 
 int32_t search_vault(vault *vault, login_struct *login_attempt) {
 	//printf("search vault: Num vault users: %d\n", vault->num_users);
 	if(vault->num_users == 0) {
-		printf("no vault users rn.\n");
+		//printf("no vault users rn.\n");
 		return -1;
 	}
 	for(uint32_t i = 0; i < vault->num_users; i++) {
@@ -162,7 +162,7 @@ void get_credentials(website *get_cred) {
 void thread_join(locks *lock) {
 	pthread_mutex_lock(&(lock->m));
  	while (lock->done == 0)
-  		pthread_cond_wait(&(lock->cl), &(lock->m));
+  		pthread_cond_wait(&(lock->w), &(lock->m));
   	pthread_mutex_unlock(&(lock->m));
 }
 
@@ -178,8 +178,7 @@ void create_vault() {
 
 int main(int argc, char** argv) {
 	locks lock;
-	pthread_mutex_t m;								//40 bytes		
-	pthread_cond_t cl = PTHREAD_COND_INITIALIZER;	//56 bytes
+	pthread_mutex_t m;								//40 bytes
 	pthread_cond_t w = PTHREAD_COND_INITIALIZER;
 	create_vault();
 	vault vault;
@@ -188,7 +187,7 @@ int main(int argc, char** argv) {
 	while (1) {
 		if(!read_vault(&vault)) {
 			vault.num_users = 0;
-			printf("Vault empty\n");
+			//printf("Vault empty\n");
 		}
 		user_account input, user_store;
 		login_struct login_attempt;
@@ -215,7 +214,6 @@ int main(int argc, char** argv) {
 				*/
 				lock.done = 0;
 				lock.m = m;
-				lock.cl = cl;
 				lock.w = w;
 				create_user(&input, size, &user_store, &lock); //need lock
 				thread_join(&lock);
@@ -226,7 +224,7 @@ int main(int argc, char** argv) {
 					printf("Successfully added user\n");
 				}
 				write_vault(&vault);
-				printf("vault user: %s\n", vault.user_store[0].m_uname);
+				//printf("vault user: %s\n", vault.user_store[0].m_uname);
 				//print_vault(&vault);
 				break;
 			}
@@ -237,7 +235,11 @@ int main(int argc, char** argv) {
 					if(index >= 0) {
 						//printf("index: %d\n", index);
 						uint32_t found = false;
-						check_user(&login_attempt, size, &vault.user_store[index], &found); //need lock here
+						lock.done = 0;
+						lock.m = m;
+						lock.w = w;
+						check_user(&login_attempt, size, &vault.user_store[index], &found, &lock); //need lock here
+						thread_join(&lock);
 						if(found) {
 							printf("User found!\n");
 							while(1) {
@@ -248,7 +250,11 @@ int main(int argc, char** argv) {
 									uint32_t cred_found = false;
 									printf("Get credentials\n");
 									get_credentials(&user_cred);
-									return_credentials(&vault.user_store[index], &user_cred, size, &ret_cred, &cred_found);
+									lock.done = 0;
+									lock.m = m;
+									lock.w = w;
+									return_credentials(&vault.user_store[index], &user_cred, size, &ret_cred, &cred_found, &lock); //need lock
+									thread_join(&lock);
 									if(cred_found) {
 										printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
 											ret_cred.web_name, ret_cred.credentials.a_uname, ret_cred.credentials.a_pword);
@@ -262,7 +268,11 @@ int main(int argc, char** argv) {
 									printf("Add credentials\n");
 									if(vault.user_store[index].num_accounts < MAX_ACCOUNTS) {
 										add_credentials(&user_cred);
-										encrypt_credentials(&user_cred, size, &encrypted_user_cred); //need lock
+										lock.done = 0;
+										lock.m = m;
+										lock.w = w;
+										encrypt_credentials(&user_cred, size, &encrypted_user_cred, &lock); //need lock
+										thread_join(&lock);
 										vault.user_store[index].accounts[vault.user_store[index].num_accounts] = encrypted_user_cred;
 										vault.user_store[index].num_accounts++;
 										write_vault(&vault);
