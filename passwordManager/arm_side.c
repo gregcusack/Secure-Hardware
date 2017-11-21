@@ -22,11 +22,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-uint32_t done = 0;
-pthread_mutex_t m ;
-pthread_cond_t c = PTHREAD_COND_INITIALIZER;
-pthread_cond_t w = PTHREAD_COND_INITIALIZER;
-
 void print_vault(vault *vault) {
 	printf("Vault: num_users: %d\n", vault->num_users);
 	for(int i=0; i < MAX_USERS; i++) {
@@ -160,10 +155,13 @@ void get_credentials(website *get_cred) {
 }
 
 void thread_join(locks *lock) {
+	//printf("lock->done: %d\n", lock->done);
+	//printf("here enter thread_join\n");
 	pthread_mutex_lock(&(lock->m));
  	while (lock->done == 0)
-  		pthread_cond_wait(&(lock->w), &(lock->m));
-  	pthread_mutex_unlock(&(lock->m));
+  		pthread_cond_wait(&lock->w, &lock->m);
+  	pthread_mutex_unlock(&lock->m);
+  	//printf("exit thread_join\n");
 }
 
 void create_vault() {
@@ -184,6 +182,9 @@ int main(int argc, char** argv) {
 	vault vault;
 	uint32_t a = BUFF_SIZE;
 	uint32_t *size = &a;
+	pthread_t p;
+	thread_args args;
+	int rc;
 	while (1) {
 		if(!read_vault(&vault)) {
 			vault.num_users = 0;
@@ -198,26 +199,23 @@ int main(int argc, char** argv) {
 		switch(c) {
 			case 'c':
 			case 'C': {
-				//pthread_t p;
 				create_account(&input);
-				/*
-				thread_args args;
 				args.u_acct_t = input;
 				args.size_th = *size;
 				args.u_store_t = user_store;
+				args.lock.done = 0;
+				args.lock.m = m;
+				args.lock.w = w;
 				int rc;
 				rc = pthread_create(&p, NULL, &create_user, (void *)&args);
 				if(rc != 0) {
 					fprintf(stderr, "Failed to create creare_user thread. Exiting Program.\n");
 					exit(0);
 				}
-				*/
-				lock.done = 0;
-				lock.m = m;
-				lock.w = w;
-				create_user(&input, size, &user_store, &lock); //need lock
-				thread_join(&lock);
-				if(!vault_store_user(&vault, &user_store)) { //must wait for lock before calling this
+				//create_user(&input, size, &user_store, &lock); //need lock
+				thread_join(&args.lock);
+
+				if(!vault_store_user(&vault, &args.u_store_t)) { //must wait for lock before calling this
 					printf("Error adding acound: max number of users (%d) reached\n", MAX_USERS);
 				}
 				else {
@@ -234,33 +232,45 @@ int main(int argc, char** argv) {
 					int32_t index = search_vault(&vault, &login_attempt);
 					if(index >= 0) {
 						//printf("index: %d\n", index);
-						uint32_t found = false;
-						lock.done = 0;
-						lock.m = m;
-						lock.w = w;
-						check_user(&login_attempt, size, &vault.user_store[index], &found, &lock); //need lock here
-						thread_join(&lock);
-						if(found) {
+						//uint32_t found = false;
+						printf("LOGIN!\n");
+						args.u_acct_t = input;
+						args.u_store_t = vault.user_store[index];
+						args.lock.done = 0;
+						args.lock.m = m;
+						args.lock.w = w;
+						args.found = false;
+						args.login_t = login_attempt;
+						args.size_th = *size;
+						pthread_create(&p, NULL, &check_user, (void *)&args);
+						//check_user(&login_attempt, size, &vault.user_store[index], &found, &lock); //need lock here
+						thread_join(&args.lock);
+						if(args.found) {
 							printf("User found!\n");
 							while(1) {
 								uint32_t k = get_or_add();
 								website user_cred;
 								if(k == 1) {
 									website ret_cred;
-									uint32_t cred_found = false;
+									//uint32_t cred_found = false;
 									printf("Get credentials\n");
 									get_credentials(&user_cred);
-									lock.done = 0;
-									lock.m = m;
-									lock.w = w;
-									return_credentials(&vault.user_store[index], &user_cred, size, &ret_cred, &cred_found, &lock); //need lock
-									thread_join(&lock);
-									if(cred_found) {
+									args.u_store_t = vault.user_store[index];
+									args.lock.done = 0;
+									args.lock.m = m;
+									args.lock.w = w;
+									args.size_th = *size;
+									args.web_a = user_cred;
+									args.web_b = ret_cred;
+									args.found = false;
+									pthread_create(&p, NULL, &return_credentials, (void *)&args);
+									thread_join(&args.lock);
+									if(args.found) {
 										printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
-											ret_cred.web_name, ret_cred.credentials.a_uname, ret_cred.credentials.a_pword);
+											args.web_b.web_name, args.web_b.credentials.a_uname, args.web_b.credentials.a_pword);
 									}
 									else {
-										printf("No credentials for the website (%s) found!\n", user_cred.web_name); //maybe
+										printf("No credentials for the website (%s) found!\n", args.web_a.web_name); //maybe
 									}
 								}
 								else if(k == 2) {
@@ -268,12 +278,15 @@ int main(int argc, char** argv) {
 									printf("Add credentials\n");
 									if(vault.user_store[index].num_accounts < MAX_ACCOUNTS) {
 										add_credentials(&user_cred);
-										lock.done = 0;
-										lock.m = m;
-										lock.w = w;
-										encrypt_credentials(&user_cred, size, &encrypted_user_cred, &lock); //need lock
-										thread_join(&lock);
-										vault.user_store[index].accounts[vault.user_store[index].num_accounts] = encrypted_user_cred;
+										args.lock.done = 0;
+										args.lock.m = m;
+										args.lock.w = w;
+										args.size_th = *size;
+										args.web_a = user_cred;
+										args.web_b = encrypted_user_cred;
+										pthread_create(&p, NULL, &encrypt_credentials, (void *)&args);
+										thread_join(&args.lock);
+										vault.user_store[index].accounts[vault.user_store[index].num_accounts] = args.web_b;//encrypted_user_cred;
 										vault.user_store[index].num_accounts++;
 										write_vault(&vault);
 										

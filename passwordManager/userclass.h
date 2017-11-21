@@ -35,13 +35,16 @@ typedef struct locks { //100 bytes
 	pthread_cond_t w;	//56 bytes
 } locks;
 
-/*
 typedef struct thead_args {
 	user_account u_acct_t;
 	uint32_t size_th;
 	user_account u_store_t;
+	locks lock;
+	uint32_t found;
+	login_struct login_t;
+	website web_a;
+	website web_b;
 } thread_args;
-*/
 
 /* User struct
  * username

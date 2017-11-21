@@ -24,7 +24,7 @@ void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decr
 	}
 }
 
-
+/*
 void create_user(user_account *user_data, uint32_t *size, 
 	user_account *user_cipher, locks *lock) {
 	pthread_mutex_lock(&(lock->m));
@@ -33,14 +33,35 @@ void create_user(user_account *user_data, uint32_t *size,
 	pthread_cond_signal(&(lock->w));
 	pthread_mutex_unlock(&(lock->m));
 }
+*/
 
-/*
 void *create_user(void *arguments) {
 	thread_args *args = arguments;
+	pthread_mutex_lock(&(args->lock.m));
 	printf("args_user_account: %s\n", args->u_acct_t.m_uname);
 	encrypt_m_pword(&args->u_acct_t, args->size_th, &args->u_store_t);
+	args->lock.done = 1;
+	pthread_cond_signal(&(args->lock.w));
+	pthread_mutex_unlock(&(args->lock.m));
 }
-*/
+
+void *check_user(void *arguments) {
+	thread_args *args = arguments;
+	pthread_mutex_lock(&(args->lock.m));
+	unsigned char decrypted[args->size_th];
+	decrypt_m_pword(&args->u_store_t.m_pword, args->size_th, decrypted);
+	if(!strcmp(args->login_t.l_pword, decrypted)) {
+		args->found = true;
+	}
+	else {
+		args->found = false;
+	}
+	args->lock.done = 1;
+	pthread_cond_signal(&(args->lock.w));
+	pthread_mutex_unlock(&(args->lock.m));
+}
+
+/*
 void check_user(login_struct *login_attempt, uint32_t *size, 
 	user_account *cipher_data, uint32_t *found, locks *lock) {
 	unsigned char decrypted[*size];
@@ -56,7 +77,27 @@ void check_user(login_struct *login_attempt, uint32_t *size,
 	pthread_cond_signal(&(lock->w));
 	pthread_mutex_unlock(&(lock->m));
 }
+*/
 
+void *encrypt_credentials(void *arguments) {
+	thread_args *args = arguments;
+	pthread_mutex_lock(&args->lock.m);
+	for(uint8_t i=0; i < args->size_th; i++) {
+		args->web_b.web_name[i] = args->web_a.web_name[i]^KEY[i];
+		args->web_b.credentials.a_uname[i] = args->web_a.credentials.a_uname[i]^KEY[i];
+		args->web_b.credentials.a_pword[i] = args->web_a.credentials.a_pword[i]^KEY[i];
+	}
+	args->web_b.web_name[args->size_th-1] = '\0';
+	args->web_b.credentials.a_uname[args->size_th-1] = '\0';
+	args->web_b.credentials.a_pword[args->size_th-1] = '\0';
+	memset(args->web_a.web_name,0,args->size_th);
+	memset(args->web_a.credentials.a_uname,0,args->size_th);
+	memset(args->web_a.credentials.a_pword,0,args->size_th);
+	args->lock.done = 1;
+	pthread_cond_signal(&args->lock.w);
+	pthread_mutex_unlock(&args->lock.m);
+}
+/*
 void encrypt_credentials(website *user_cred, uint32_t *size, 
 	website *encrypted_user_cred, locks *lock) {
 	pthread_mutex_lock(&(lock->m));
@@ -75,7 +116,37 @@ void encrypt_credentials(website *user_cred, uint32_t *size,
 	pthread_cond_signal(&(lock->w));
 	pthread_mutex_unlock(&(lock->m));
 }
+*/
+void *return_credentials(void *arguments) {
+	thread_args *args = arguments;
+	pthread_mutex_lock(&(args->lock.m));
+	unsigned char decrypted[args->size_th];
+	for(uint8_t i=0; i < args->u_store_t.num_accounts; i++) {
+		for(uint8_t j=0; j < args->size_th; j++) {
+			decrypted[j] = args->u_store_t.accounts[i].web_name[j]^KEY[j];
+		}
+		if(!strcmp(decrypted, args->web_a.web_name)) {
+			for(uint8_t k=0;k < args->size_th; k++) {
+				args->web_b.web_name[k] = decrypted[k];
+				args->web_b.credentials.a_uname[k] = args->u_store_t.accounts[i].credentials.a_uname[k]^KEY[k];
+				args->web_b.credentials.a_pword[k] = args->u_store_t.accounts[i].credentials.a_pword[k]^KEY[k];
+			}
+			args->found = true;
+			args->lock.done = 1;
+			pthread_cond_signal(&args->lock.w);
+			pthread_mutex_unlock(&args->lock.m);
+			break;
+		}
+	}
+	if(!args->found) {
+		args->found = false;
+		args->lock.done = 1;
+		pthread_cond_signal(&args->lock.w);
+		pthread_mutex_unlock(&args->lock.m);
+	}
+}
 
+/*
 void return_credentials(user_account *user, website *user_cred, 
 	uint32_t *size, website *ret_cred, uint32_t *cred_found, locks *lock) {
 	//we may get a seg fault here.
@@ -103,7 +174,7 @@ void return_credentials(user_account *user, website *user_cred,
 	pthread_cond_signal(&(lock->w));
 	pthread_mutex_unlock(&(lock->m));
 }
-
+*/
 
 
 
