@@ -120,20 +120,22 @@ void login(login_struct *login_attempt) {
 	getchar();
 }
 
-uint32_t get_or_add() {
+uint32_t get_add_or_edit() {
 	char c;
 	while(1) {
-		printf("Add web account credentials or get web account credentials (a/g): ");
+		printf("Add web account credentials or get web account credentials (a/g/e): ");
 		scanf(" %c", &c);
 		getchar();
 		switch(c) {
 			case 'g':
 			case 'G':
 				return 1;
-				break;
 			case 'a':
 			case 'A':
 				return 2;
+			case 'e':
+			case 'E':
+				return 3;
 			default:
 				printf("Unrecognized command.  Try again.\n");
 				break;
@@ -154,10 +156,19 @@ void add_credentials(website *new_cred) {
 }
 
 void get_credentials(website *get_cred) {
-	printf("Enter website name to get credentials: ");
 	scanf("%s",get_cred->web_name);
 	getchar();
 }
+
+void edit_uname_pword(website *ret_cred) {
+	printf("Enter new username: ");
+	scanf("%s",ret_cred->credentials.a_uname);
+	getchar();
+	printf("Enter website password: ");
+	scanf("%s",ret_cred->credentials.a_pword);
+	getchar();
+}
+
 
 void thread_join(locks *lock) {
 	pthread_mutex_lock(&(lock->m));
@@ -243,12 +254,13 @@ int main(int argc, char** argv) {
 						if(found) {
 							printf("User found!\n");
 							while(1) {
-								uint32_t k = get_or_add();
+								uint32_t k = get_add_or_edit();
 								website user_cred;
 								if(k == 1) {
 									website ret_cred;
 									uint32_t cred_found = false;
 									printf("Get credentials\n");
+									printf("Enter website name to get credentials: ");
 									get_credentials(&user_cred);
 									lock.done = 0;
 									lock.m = m;
@@ -285,6 +297,34 @@ int main(int argc, char** argv) {
 									else {
 										printf("Max number of web credentials already added.  No more space.\n");
 									}
+								}
+								else if(k==3) {
+									//Edit credentials here:
+									website encrypted_user_cred;
+									printf("Edit credentials\n");
+									website ret_cred;
+									uint32_t cred_found = false;					
+									printf("Enter website name to edit credentials: ");
+									get_credentials(&user_cred);
+									lock.done = 0;
+									lock.m = m;
+									lock.w = w;
+									return_credentials(&vault.user_store[index], &user_cred, size, &ret_cred, &cred_found, &lock);
+									thread_join(&lock);
+									if(cred_found) {
+										printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
+											ret_cred.web_name, ret_cred.credentials.a_uname, ret_cred.credentials.a_pword);
+										printf("Enter new credentials for \"%s\"\n", ret_cred.web_name);
+										edit_uname_pword(&ret_cred);
+										lock.done = 0;
+										encrypt_credentials(&ret_cred, size, &encrypted_user_cred, &lock);
+										thread_join(&lock);
+											
+									}
+									else {
+										printf("No credentials for the website (%s) found!\n", user_cred.web_name); //maybe
+									}
+
 								}
 								else {
 									printf("Error: Should not have made it here\n");
