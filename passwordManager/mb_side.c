@@ -34,13 +34,6 @@ void create_user(user_account *user_data, uint32_t *size,
 	pthread_mutex_unlock(&(lock->m));
 }
 
-/*
-void *create_user(void *arguments) {
-	thread_args *args = arguments;
-	printf("args_user_account: %s\n", args->u_acct_t.m_uname);
-	encrypt_m_pword(&args->u_acct_t, args->size_th, &args->u_store_t);
-}
-*/
 void check_user(login_struct *login_attempt, uint32_t *size, 
 	user_account *cipher_data, uint32_t *found, locks *lock) {
 	unsigned char decrypted[*size];

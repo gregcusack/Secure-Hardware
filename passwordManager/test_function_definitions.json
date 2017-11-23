@@ -13,12 +13,22 @@
           "type":"uint32_t",
           "length":"4"
         }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
+        }
       ],
       "outputs" : [
         {
           "name":"user_cipher",
           "type":"user_account",
           "length":"276",
+        }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
         }
       ]
     },
@@ -40,12 +50,22 @@
           "type":"user_account",
           "length":"32"
         }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
+        }
       ],
       "outputs" : [
         {
           "name":"found",
           "type":"uint32_t",
           "length":"4",
+        }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
         }
       ]
     },
@@ -62,12 +82,22 @@
           "type":"uint32_t",
           "length":"4"
         }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
+        }
       ],
       "outputs" : [
         {
           "name":"encrytped_user_cred",
           "type":"website",
           "length":"48",
+        }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
         }
       ]
     },
@@ -89,6 +119,11 @@
           "type":"uint32_t",
           "length":"4"
         }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
+        }
       ],
       "outputs" : [
         {
@@ -100,6 +135,11 @@
           "name":"cred_found",
           "type":"uint32_t",
           "length":"4",
+        }
+        {
+          "name":"lock",
+          "type":"locks",
+          "length":"100"
         }
       ]
     }
