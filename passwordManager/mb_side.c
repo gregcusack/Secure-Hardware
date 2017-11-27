@@ -2,10 +2,12 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifndef MBSIDE_H
-#define MBSIDE_H
-#include "mbside.h"
-#endif
+// #ifndef MBSIDE_H
+// #define MBSIDE_H
+// #include "mbside.h"
+// #endif
+// #include "microblaze_protocol_header.h"
+// #include "userclass.h"
 
 #define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0:\0")
 
@@ -23,37 +25,34 @@ void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decr
 	}
 }
 
-void create_user(unsigned char *create_pw, unsigned int *size,   //ret 
-	unsigned char *cipher_pw, unsigned int *done_flag) {
+void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *cipher_pw, unsigned int *done_flag) {
 	encrypt_m_pword(create_pw, *size, cipher_pw);
 	*done_flag = 1;
 }
 
 //return found, done_flag
-void check_user(unsigned char *login_attempt, unsigned int *size, 
+void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
 	unsigned char decrypted[*size];
 	decrypt_m_pword(cipher_data, *size, decrypted);
-	if(!strcmp(login_attempt, decrypted)) {
-		printf("Master password checks out!\n");
+	if(!strcmp((char*)login_attempt, (char*)decrypted)) {
 		*found = true;
 	}
 	else {
-		printf("Invalid master password\n");
 		*found = false;
 	}
 	*done_flag = 1;
 }
 
 //return cred_found, done_flag
-void decrypt_and_check_for_web_credentials(unsigned char *web_name, 
-	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found, 
+void decrypt_and_check_for_web_credentials(unsigned char *web_name,
+	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found,
 	unsigned int *done_flag) {
 	unsigned char decrypted[*size];
 	for(unsigned int j=0; j < *size; j++) {
 		decrypted[j] = web_name[j]^KEY[j];
 	}
-	if(!strcmp(decrypted, user_cred_get)) {
+	if(!strcmp((char*)decrypted, (char*)user_cred_get)) {
 		*cred_found = 1;
 	}
 	else {
@@ -64,8 +63,8 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 
 //return cipher_web_name/uname/pword/done_flag
 void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
-	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name, 
-	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword, 
+	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
+	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
 	unsigned int *done_flag) {
 	for(unsigned int i=0; i < *size; i++) {
 		cipher_web_name[i] = web_name[i]^KEY[i];
@@ -82,9 +81,9 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 }
 
 //return ret_cred_web/uname/pword/done_flag
-void return_credentials(unsigned char *web_name, unsigned char *a_uname, 
+void return_credentials(unsigned char *web_name, unsigned char *a_uname,
 	unsigned char *a_pword, unsigned int *size,
-	unsigned char *ret_cred_web, unsigned char *ret_cred_uname, 
+	unsigned char *ret_cred_web, unsigned char *ret_cred_uname,
 	unsigned char *ret_cred_pword, unsigned int *done_flag) {
 	for(unsigned int k=0; k < *size; k++) {
 		ret_cred_web[k] = web_name[k]^KEY[k];
@@ -97,7 +96,7 @@ void return_credentials(unsigned char *web_name, unsigned char *a_uname,
 
 
 /*
-void create_user(user_account *user_data, uint32_t *size, 
+void create_user(user_account *user_data, uint32_t *size,
 	user_account *user_cipher, locks *lock) {
 	pthread_mutex_lock(&(lock->m));
 	encrypt_m_pword(user_data, *size, user_cipher);
@@ -109,7 +108,7 @@ void create_user(user_account *user_data, uint32_t *size,
 
 
 /*
-void check_user(login_struct *login_attempt, uint32_t *size, 
+void check_user(login_struct *login_attempt, uint32_t *size,
 	user_account *cipher_data, uint32_t *found, locks *lock) {
 	unsigned char decrypted[*size];
 	pthread_mutex_lock(&(lock->m));
@@ -126,7 +125,7 @@ void check_user(login_struct *login_attempt, uint32_t *size,
 }*/
 
 /*
-void encrypt_credentials(website *user_cred, uint32_t *size, 
+void encrypt_credentials(website *user_cred, uint32_t *size,
 	website *encrypted_user_cred, locks *lock) {
 	pthread_mutex_lock(&(lock->m));
 	for(uint8_t i=0; i < *size; i++) {
@@ -147,7 +146,7 @@ void encrypt_credentials(website *user_cred, uint32_t *size,
 */
 
 /*
-void return_credentials(user_account *user, website *user_cred, 
+void return_credentials(user_account *user, website *user_cred,
 	uint32_t *size, website *ret_cred, uint32_t *cred_found, locks *lock) {
 	//we may get a seg fault here.
 	unsigned char decrypted[*size];
@@ -196,5 +195,5 @@ void return_credentials(user_account *user, website *user_cred,
 
 
 
-	//login_struct *cipher_data, uint32_t *pword_len, 
+	//login_struct *cipher_data, uint32_t *pword_len,
 	//user_account *login_attempt, uint32_t *found);

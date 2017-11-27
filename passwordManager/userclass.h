@@ -20,7 +20,7 @@ typedef struct website { // 48 bytes
 typedef struct user_account {	//276
 	unsigned char m_uname[BUFF_SIZE]; //master uname //16 bytes
 	unsigned char m_pword[BUFF_SIZE];				 //16 bytes
-	website accounts[MAX_ACCOUNTS];		//240 bytes				 
+	website accounts[MAX_ACCOUNTS];		//240 bytes
 	uint32_t num_accounts;// = 0;		//4 bytes
 } user_account;
 
