@@ -57,6 +57,7 @@ bool read_vault(vault *vault) {
 	}
 	//printf("vault user: %s\n", vault->user_store[vault->num_users].m_uname);
 	fclose(infile);
+	//vault.full = true;
 	return true;
 }
 
@@ -179,7 +180,7 @@ int main(int argc, char** argv) {
 		switch(c) {
 			case 'c':
 			case 'C': {
-				if(vault.full = true) {
+				if(vault.full == true) {
 					printf("Error adding acound: max number of users (%d) reached\n", MAX_USERS);
 					break;
 				}
