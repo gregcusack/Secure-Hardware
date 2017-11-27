@@ -6,29 +6,24 @@
         {
           "name":"create_pw",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"size",
           "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ],
       "outputs" : [
         {
           "name":"cipher_pw",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"done_flag",
           "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ]
     },
@@ -38,81 +33,61 @@
         {
           "name":"login_attempt",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"size",
           "type":"unsigned int",
-          "length":"4"
-        }
+          "length":4
+        },
         {
           "name":"cipher_data",
           "type":"unsigned char",
-          "length":"16"
-        }
-        {
-          "name":"found",
-          "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":"4"
+          "length":16
         }
       ],
       "outputs" : [
         {
           "name":"found",
           "type":"unsigned int",
-          "length":"4",
-        }
+          "length":4
+        },
         {
           "name":"done_flag",
           "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ]
     },
     {
-      "name" : "decrypt_and_check_for_web_Credentials",
+      "name" : "decrypt_and_check_for_web_credentials",
       "inputs" : [
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"user_cred_get",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"size",
           "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"cred_found",
-          "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ],
       "outputs" : [
         {
           "name":"cred_found",
           "type":"unsigned int",
-          "length":"4",
-        }
+          "length":4
+        },
         {
           "name":"done_flag",
           "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ]
     },
@@ -122,49 +97,44 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"size",
           "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ],
       "outputs" : [
         {
           "name":"ret_cred_web",
           "type":"unsigned char",
-          "length":"16",
-        }
+          "length":16
+        },
         {
           "name":"ret_cred_uname",
           "type":"unsigned char",
-          "length":"16",
-        }
+          "length":16
+        },
         {
           "name":"ret_cred_pword",
           "type":"unsigned char",
-          "length":"16",
-        }
+          "length":16
+        },
         {
           "name":"done_flag",
           "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
 
       ]
@@ -175,49 +145,44 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"size",
           "type":"unsigned int",
-          "length":"4"
-        }
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ],
       "outputs" : [
         {
           "name":"cipher_web_name",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"cipher_a_uname",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"cipher_a_pword",
           "type":"unsigned char",
-          "length":"16"
-        }
+          "length":16
+        },
         {
           "name":"done_flag",
           "type":"unsigned int",
-          "length":"4"
+          "length":4
         }
       ]
     }

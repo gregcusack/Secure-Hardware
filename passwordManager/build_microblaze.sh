@@ -1,0 +1,6 @@
+#!/bin/bash
+
+../../sdk.py --function_definitions test_function_definitions.json \
+--system_configuration ../../default_system_config.json \
+--program_name password_manager --compilation_config compilation_config.json \
+--build_microblaze

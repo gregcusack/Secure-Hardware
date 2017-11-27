@@ -1,0 +1,32 @@
+{
+  "program_name":"password_manager",
+  "microblaze":{
+    "sources":[
+      "mb_side.c"
+    ],
+    "source_directories":[
+    ],
+    "includes":[
+    ],
+    "include_directories":[
+    ]
+  },
+  "arm":{
+    "cross_compile":"arm-linux-gnueabihf-",
+    "sources":[
+      "arm_side.c"
+    ],
+    "source_directories":[
+    ],
+    "includes":[
+      "userclass.h",
+      "vault.h"
+    ],
+    "include_directories":[
+    ],
+    "libraries":[
+    ],
+    "library_directories":[
+    ]
+  }
+}
