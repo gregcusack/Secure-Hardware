@@ -27,9 +27,10 @@
 #include <stdbool.h>
 
 void print_vault(vault *vault) {
+    int i;
 	printf("Vault: num_users: %d\n", vault->num_accounts);
 	printf("Vault master password: %s\n", vault->m_pword);
-	for(int i=0; i < MAX_ACCOUNTS; i++) {
+	for(i=0; i < MAX_ACCOUNTS; i++) {
 		printf("Website: %s\n", vault->accounts[i].web_name);
 		printf("Username: %s\n", vault->accounts[i].credentials.a_uname);
 		printf("Password: %s\n", vault->accounts[i].credentials.a_pword);
@@ -65,11 +66,12 @@ bool read_vault(vault *vault) {
 }
 
 bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size) {
+    unsigned int i;
 	if(vault->full == true) {
 		return false;
 	}
 	//printf("num users in vault: %d\n", vault->num_users);
-	for(unsigned int i = 0; i < *size; i++) {
+	for(i = 0; i < *size; i++) {
 		vault->m_pword[i] = store[i];
 	}
 	vault->full = true;
