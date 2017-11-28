@@ -1,4 +1,4 @@
-#define BUFF_SIZE 16
+#define BUFF_SIZE 256
 #define MAX_USERS 1
 #ifndef USERCLASS_H
 #define USERCLASS_H
