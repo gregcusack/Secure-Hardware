@@ -179,7 +179,6 @@ int main(int argc, char** argv) {
 		unsigned char create_pw[BUFF_SIZE];
 		unsigned char cipher_pw[BUFF_SIZE];
 		unsigned char login_attempt[BUFF_SIZE];
-		user_account input, user_store;
 		printf("Create account or login? (C/L): ");
 		char c;
 		scanf(" %c", &c);
@@ -209,7 +208,7 @@ int main(int argc, char** argv) {
 					login(login_attempt);
 					unsigned int found = false;
 					done_flag = 0;
-					check_user(login_attempt, size, (vault.m_pword), &found, &done_flag);
+					check_user(login_attempt, size, vault.m_pword, &found, &done_flag);
 					thread_join(&done_flag);
 					if(found) {
 						printf("User found!\n");
