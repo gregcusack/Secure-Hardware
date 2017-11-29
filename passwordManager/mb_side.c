@@ -12,9 +12,11 @@
 #define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0:\0")
 
 void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char *ret_user) {
+	printf("input_user %s\n", input_user);
 	for(unsigned int i=0; i < size - 1; i++) {
 		ret_user[i] = input_user[i]^KEY[i];
 	}
+	printf("cipher text: right after store: %s", ret_user);
 	ret_user[size-1] = '\0';
 	memset(input_user, 0, size); //zero fill buffer
 }
@@ -23,6 +25,8 @@ void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decr
 	for(uint32_t i=0; i < size; i++) {
 		decrypted[i] = cipher_p[i]^KEY[i];
 	}
+	printf("cipher get: %s\n", cipher_p);
+	printf("Decryted pword: %s\n", decrypted);
 }
 
 void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *cipher_pw, unsigned int *done_flag) {
@@ -33,6 +37,7 @@ void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *ci
 //return found, done_flag
 void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
+	printf("here\n");
 	unsigned char decrypted[*size];
 	decrypt_m_pword(cipher_data, *size, decrypted);
 	if(!strcmp((char*)login_attempt, (char*)decrypted)) {
@@ -52,6 +57,7 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 	for(unsigned int j=0; j < *size; j++) {
 		decrypted[j] = web_name[j]^KEY[j];
 	}
+	printf("Decryted: %s\n", decrypted);
 	if(!strcmp((char*)decrypted, (char*)user_cred_get)) {
 		*cred_found = 1;
 	}
@@ -66,6 +72,7 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
 	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
 	unsigned int *done_flag) {
+	printf("web_name: %s\n", web_name);
 	for(unsigned int i=0; i < *size; i++) {
 		cipher_web_name[i] = web_name[i]^KEY[i];
 		cipher_a_uname[i] = a_uname[i]^KEY[i];
@@ -174,26 +181,3 @@ void return_credentials(user_account *user, website *user_cred,
 	pthread_mutex_unlock(&(lock->m));
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//login_struct *cipher_data, uint32_t *pword_len,
-	//user_account *login_attempt, uint32_t *found);
