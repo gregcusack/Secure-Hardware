@@ -48,15 +48,27 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found,
 	unsigned int *done_flag) {
 	unsigned char decrypted[*size];
+	uint8_t x = 1;
 	for(unsigned int j=0; j < *size; j++) {
 		decrypted[j] = web_name[j]^KEY[j];
 	}
+	unsigned int i;
+	for(i=0;i<*size;i++) {
+		if(decrypted[i] != user_cred_get[i])
+			break;
+	}
+	if(i != *size)
+		*cred_found = 0;
+	else
+		*cred_found = 1;
+	/*
 	if(!strcmp((char*)decrypted, (char*)user_cred_get)) {
 		*cred_found = 1;
 	}
-	else {
-		*cred_found = 0;
-	}
+	*/
+	//else {
+	//	*cred_found = 0;
+	//}
 	*done_flag = 1;
 }
 
