@@ -1,5 +1,5 @@
-#define BUFF_SIZE 16
-#define MAX_ACCOUNTS 5
+#define BUFF_SIZE 257
+#define MAX_ACCOUNTS 25
 #include <stdint.h>
 
 #ifndef PTHREAD_H

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/time.h>
 
 #define M_PASSWORD ((const unsigned char *) "B8D:09m-?<yvz[C|NM-?l-b!%rqoyvNL3'T8l7`v9Z^_vJK/9IE171<_#Qkwhe-1{WZ[T:v.mib80iTzc-0R^K{/u!jZ$=Q*4-cBDcb>(zHgz8ZY0_2Zu[?,p|g8P@3sf0n;E?T--LMw)PEMODkY9O}ZZz1$8WfL&(~2x-Y`F%v.R5woNW$gN>_9WV[4d1qZ3yH_;?ZzIK%KAn~q[..dUUbK-Y7}+|#>A~W_zCCVCOtW7}|O*qs-3xtK)u>lE`rz\0");
 
@@ -142,7 +143,7 @@ void add_credentials(unsigned char *new_cred_web, unsigned char *new_cred_uname,
 }
 
 void get_credentials(unsigned char *get_cred) {
-	printf("Enter website name to get credentials: ");
+	//printf("Enter website name to get credentials: ");
 	scanf("%s",get_cred);
 	getchar();
 }
@@ -322,58 +323,76 @@ int main(int argc, char** argv) {
 				
 				if(found) {
 					while(1) {
-						uint32_t k = get_or_add();
+						//uint32_t k = get_or_add();
+						bool success;
 						unsigned char user_cred_get[BUFF_SIZE];
 						done_flag = 0;
-						if(k == 1) {
-							bool success;
-							unsigned char user_ret_web[BUFF_SIZE];
-							unsigned char user_ret_uname[BUFF_SIZE];
-							unsigned char user_ret_pword[BUFF_SIZE];
-							get_credentials(user_cred_get);						/******** User input ********/
-							
-	//------>				/********** Access Credentials **********/
-							//begin time here
-							success = k1_get_cred_check(user_cred_get, 
-								user_ret_web, user_ret_uname, user_ret_pword, 
-								size, &done_flag);
-							//end time here
-							
-							if(success) {
-								printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
-									user_ret_web, user_ret_uname, user_ret_pword);
-							}
-							else {
-								printf("No credentials for the website (%s) found!\n", user_cred_get);
-							}
-							
-						}
-						else if(k == 2) {
-							bool success;
-							unsigned char user_add_web[BUFF_SIZE];
-							unsigned char user_add_uname[BUFF_SIZE];
-							unsigned char user_add_pword[BUFF_SIZE];
-							unsigned char encrypted_user_cred_web[BUFF_SIZE];
-							unsigned char encrypted_user_cred_uname[BUFF_SIZE];
-							unsigned char encrypted_user_cred_pword[BUFF_SIZE];
-							if(vault.num_accounts < MAX_ACCOUNTS)
-								add_credentials(user_add_web, user_add_uname, user_add_pword);						/******** User input ********/
-							
-	//------>				/********** Add Credentials **********/
-							//begin time here
-							success = k2_add_cred_encrypt_write_vault(user_add_web, user_add_uname,
-								user_add_pword, encrypted_user_cred_web, encrypted_user_cred_uname,
-								encrypted_user_cred_pword, size, &vault, &done_flag);
-							//end time here
 
-							if(success)
-								printf("Successfully added credentials\n");
-							else
-								printf("Max number of credentials (%d) already added.\n", MAX_ACCOUNTS);
+						unsigned char user_add_web[BUFF_SIZE];
+						unsigned char user_add_uname[BUFF_SIZE];
+						unsigned char user_add_pword[BUFF_SIZE];
+						unsigned char encrypted_user_cred_web[BUFF_SIZE];
+						unsigned char encrypted_user_cred_uname[BUFF_SIZE];
+						unsigned char encrypted_user_cred_pword[BUFF_SIZE];
+						if(vault.num_accounts < MAX_ACCOUNTS)
+							add_credentials(user_add_web, user_add_uname, user_add_pword);						/******** User input ********/
+						
+//------>				/********** Add Credentials **********/
+						//begin time here
+						clock_t begin = clock();
+						success = k2_add_cred_encrypt_write_vault(user_add_web, user_add_uname,
+							user_add_pword, encrypted_user_cred_web, encrypted_user_cred_uname,
+							encrypted_user_cred_pword, size, &vault, &done_flag);
+						clock_t end = clock();
+						//end time here
+
+						printf("exec_time_add: %f\n", ((double)end-begin)/CLOCKS_PER_SEC);
+
+						if(success)
+							printf("success\n");
+						else
+							printf("error\n");
+
+
+						/*
+						if(success)
+							printf("Successfully added credentials\n");
+						else
+							printf("Max number of credentials (%d) already added.\n", MAX_ACCOUNTS);
+						*/
+						
+
+						unsigned char user_ret_web[BUFF_SIZE];
+						unsigned char user_ret_uname[BUFF_SIZE];
+						unsigned char user_ret_pword[BUFF_SIZE];
+						get_credentials(user_cred_get);						/******** User input ********/
+						
+//------>				/********** Access Credentials **********/
+						//begin time here
+						begin = clock();
+						success = k1_get_cred_check(user_cred_get, 
+							user_ret_web, user_ret_uname, user_ret_pword, 
+							size, &done_flag);
+						end = clock();
+						//end time here
+						
+						printf("exec_time_get: %f\n", ((double)end-begin)/CLOCKS_PER_SEC);
+
+						if(success) 
+							printf("found\n");
+						else 
+							printf("not_found\n");
+						
+
+						/*if(success) {
+							printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
+								user_ret_web, user_ret_uname, user_ret_pword);
 						}
 						else {
-							printf("Error: Should not have made it here\n");
-						}
+							printf("No credentials for the website (%s) found!\n", user_cred_get);
+						}*/
+						
+					
 					}
 				}
 				else {

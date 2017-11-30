@@ -5,13 +5,16 @@
 // #include "microblaze_protocol_header.h"
 // #include "userclass.h"
 
-#define KEY ((const unsigned char *) "-&/1^!v80`31JL:B~q`~K(y!~;SBDw0:\0")
-
+#define KEY ((const unsigned char *) "aGkecI6VuFTecB4hpTC9YLNjwkvFOMos9qGjulqlRhPBdysglPOhl4O077S5iei7kHx4mrqyw6WauleRgMvl2gXW1nUkLWzh0C8R8C0x6hRIhJNkOOVDhQjtuCUQd718IqxvcEsODa5Zu9TbkB2RcDMcAoXPruJkf4fwYwO4QqEP3NlqE2jCr5qi70pmePUIijBY2vVPJDdGj1lIjTplHmgf0ZHhBN75nD1yWutGLcmDwfS4dd8idwoM2yxMOz8n\0")
+									  
 void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char *ret_user) {
+	//printf("encrypt this: %s\n", input_user);
+	//printf("size: %d\n", size);
 	for(unsigned int i=0; i < size - 1; i++) {
 		ret_user[i] = input_user[i]^KEY[i];
 	}
 	ret_user[size-1] = '\0';
+	//printf("encrypted: %s\n", ret_user);
 	memset(input_user, 0, size); //zero fill buffer
 }
 
@@ -62,11 +65,13 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
 	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
 	unsigned int *done_flag) {
+	printf("web_name: %s\n", web_name);
 	for(unsigned int i=0; i < *size; i++) {
 		cipher_web_name[i] = web_name[i]^KEY[i];
 		cipher_a_uname[i] = a_uname[i]^KEY[i];
 		cipher_a_pword[i] = a_pword[i]^KEY[i];
 	}
+	printf("encrypted: %s\n", cipher_web_name);
 	cipher_web_name[*size-1] = '\0';
 	cipher_a_uname[*size-1] = '\0';
 	cipher_a_pword[*size-1] = '\0';
