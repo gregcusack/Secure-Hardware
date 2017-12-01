@@ -1,7 +1,7 @@
 #include <stdint.h>
-#include <string.h>
+// #include <string.h>
 #include <stdbool.h>
-#include <stdio.h>
+// #include <stdio.h>
 
 #define KEY ((const unsigned char *) "aGkecI6VuFTecB4hpTC9YLNjwkvFOMos9qGjulqlRhPBdysglPOhl4O077S5iei7kHx4mrqyw6WauleRgMvl2gXW1nUkLWzh0C8R8C0x6hRIhJNkOOVDhQjtuCUQd718IqxvcEsODa5Zu9TbkB2RcDMcAoXPruJkf4fwYwO4QqEP3NlqE2jCr5qi70pmePUIijBY2vVPJDdGj1lIjTplHmgf0ZHhBN75nD1yWutGLcmDwfS4dd8idwoM2yxMOz8n\0")
 
@@ -32,14 +32,15 @@ void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decr
 }
 
 void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *cipher_pw, unsigned int *done_flag) {
-	encrypt_m_pword(create_pw, *size, cipher_pw);
-	*done_flag = 1;
+	// encrypt_m_pword(create_pw, *size, cipher_pw);
+	// *done_flag = 1;
+	cipher_pw[0] = 0xFF;
 }
 
 //return found, done_flag
 void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
-	unsigned char decrypted[*size];
+	unsigned char decrypted[256];
     int i, found_temp = 1;
 	decrypt_m_pword(cipher_data, *size, decrypted);
 	// if(memcmp(login_attempt, decrypted, 256) == 0) {
