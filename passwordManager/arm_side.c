@@ -3,10 +3,10 @@
 #include "userclass.h"
 #endif
 
-// #ifndef MBSIDE_H
-// #define MBSIDE_H
-// #include "mbside.h"
-// #endif
+#ifndef MBSIDE_H
+#define MBSIDE_H
+#include "mbside.h"
+#endif
 #include "arm_protocol_header.h"
 #include "enclave_library.h"
 
@@ -153,7 +153,7 @@ void create_vault() {
 	}
 	fclose(f);
 }
-
+/*
 char ask_user_c_l() {
 	printf("Create account or login? (C/L): ");
 	char c;
@@ -161,16 +161,18 @@ char ask_user_c_l() {
 	getchar();
 	return c;
 }
+*/
 
 /*** 
  *** Function takes new user master password, enrypts, and stores in vault 
  ***/
+/*
 uint8_t case_C_encrypt_and_write(unsigned int *done_flag, unsigned char *create_pw, 
 	unsigned int *size, unsigned char *cipher_pw) {
 	done_flag = 0;
-	create_user(create_pw, size, cipher_pw, &done_flag);
+	create_user(create_pw, size, cipher_pw, done_flag);
 
-	thread_join(&done_flag);
+	thread_join(done_flag);
 	vault vault;
 	if(!read_vault(&vault)) {
 		vault.num_accounts = 0;
@@ -181,11 +183,12 @@ uint8_t case_C_encrypt_and_write(unsigned int *done_flag, unsigned char *create_
 	write_vault(&vault);
 	return 1;
 }
-
+*/
 /*** 
  *** Function checks to see if entered master password matches the encrypted
  *** one stored in the vault (authenticates user) 
  ***/
+/*
 unsigned int login_check_user(unsigned int *done_flag, unsigned char *login_attempt, 
 	unsigned int *size, unsigned char *m_pword, unsigned int *found) {
 	//login(login_attempt);
@@ -195,13 +198,14 @@ unsigned int login_check_user(unsigned int *done_flag, unsigned char *login_atte
 	thread_join(&done_flag);
 	return found;
 }
+*/
 
 /*** 
  *** Function checks to see if desired credentials exist in the vault
  *** Credentials are returned to user (can be accessed from main)
  *** Should take longer if more credentials are in vault (O(n)) 
  ***/
-
+/*
 bool k1_get_cred_check(unsigned char *user_cred_get, 
 	unsigned char *user_ret_web, unsigned char *user_ret_uname, 
 	unsigned char *user_ret_pword, unsigned int *size, unsigned int *done_flag) {
@@ -230,11 +234,12 @@ bool k1_get_cred_check(unsigned char *user_cred_get,
 	}
 	return 0;
 }
-
+*/
 /*** 
  *** Function takes a new set of credentials from user, encrypts them,
  *** and stores them in the vault.
  ***/
+/*
 bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 	unsigned char *user_add_uname, unsigned char *user_add_pword,
 	unsigned char *encrypted_user_cred_web, unsigned char *encrypted_user_cred_uname,
@@ -260,6 +265,7 @@ bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 	}
 	return 0;
 }
+*/
 
 int main(int argc, char** argv) {
 	enclave_init_with_file("password_manager.bin");
@@ -299,12 +305,6 @@ int main(int argc, char** argv) {
 				if(!vault_store_user(&vault, cipher_pw, size)) { //must wait for lock before calling this
 					exit(1);
 				}
-				//printf("login_password_test: %s\n", login_password_test);
-				uint8_t status = case_C_encrypt_and_write(&done_flag, create_pw, size, cipher_pw);
-				//end time here
-				
-				if(!status)
-					printf("Error adding acount: max number of users (%d) reached\n", MAX_ACCOUNTS);
 				break;
 			}
 			case 'l':

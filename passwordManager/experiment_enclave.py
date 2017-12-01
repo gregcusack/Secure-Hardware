@@ -18,16 +18,18 @@ def get_random_password(length):
 if __name__ == "__main__":
     if os.path.exists("test.dat"):
         os.remove("test.dat")
+    print("herey")
     child = pexpect.spawn("./password_manager")
     child.sendline("c")
     child.sendline("l")
+    print("herex")
     count = 0
     passwords = {}
     add_results = []
     get_results = []
     for length in range(4, 260, 4):
         for iteration in range(ITERATIONS):
-            #print("here")
+            print("here")
             current_name = "test{}_{}".format(iteration, length)
             current_user = "user{}_{}".format(iteration, length)
             random_password = get_random_password(length)
@@ -36,11 +38,11 @@ if __name__ == "__main__":
             child.sendline(current_name)
             child.sendline(current_name)
             child.sendline(random_password)
-            #print("here2")
+            print("here2")
             child.expect("exec_time_add: \d+.\d+")
             temp_add = float(child.after[15:])
 
-            #print("here3")
+            print("here3")
             child.sendline(current_name)
             child.expect('(found)')
             child.expect("exec_time_get: \d+.\d+")
