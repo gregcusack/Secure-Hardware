@@ -10,11 +10,11 @@ void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char
 	//printf("encrypt this: %s\n", input_user);
 	//printf("size: %d\n", size);
 	//printf("here7\n");
-	for(i=0; i < size - 1; i++) {
+	for(i=0; i < size; i++) {
 		ret_user[i] = input_user[i]^KEY[i];
 	}
 	//printf("here8\n");
-	ret_user[size-1] = '\0';
+	// ret_user[size-1] = '\0';
 	//printf("here9\n");
 	//printf("encrypted: %s\n", ret_user);
 	// memset(input_user, 0, size); //zero fill buffer
@@ -43,7 +43,7 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
     int i, found_temp = 1;
 	decrypt_m_pword(cipher_data, *size, decrypted);
 	// if(memcmp(login_attempt, decrypted, 256) == 0) {
-	for(i=0; i<256; i++){
+	for(i=0; i<*size; i++){
 		if(login_attempt[i] != decrypted[i]){
 			found_temp = 0;
 		}
