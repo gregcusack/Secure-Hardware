@@ -6,7 +6,7 @@
         {
           "name":"create_pw",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"size",
@@ -18,7 +18,7 @@
         {
           "name":"cipher_pw",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"done_flag",
@@ -33,7 +33,7 @@
         {
           "name":"login_attempt",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"size",
@@ -43,7 +43,7 @@
         {
           "name":"cipher_data",
           "type":"unsigned char",
-          "length":260
+          "length":256
         }
       ],
       "outputs" : [
@@ -65,12 +65,12 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"user_cred_get",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"size",
@@ -97,17 +97,17 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"size",
@@ -119,17 +119,17 @@
         {
           "name":"ret_cred_web",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"ret_cred_uname",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"ret_cred_pword",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"done_flag",
@@ -145,17 +145,17 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"size",
@@ -167,17 +167,17 @@
         {
           "name":"cipher_web_name",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"cipher_a_uname",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"cipher_a_pword",
           "type":"unsigned char",
-          "length":260
+          "length":256
         },
         {
           "name":"done_flag",
