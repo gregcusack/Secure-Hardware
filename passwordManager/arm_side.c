@@ -1,12 +1,15 @@
+#include "unistd.h"
+#include <sys/syscall.h>
+
 #ifndef USERCLASS_H
 #define USERCLASS_H
 #include "userclass.h"
 #endif
 
-#ifndef MBSIDE_H
-#define MBSIDE_H
-#include "mbside.h"
-#endif
+// #ifndef MBSIDE_H
+// #define MBSIDE_H
+// #include "mbside.h"
+// #endif
 #include "arm_protocol_header.h"
 #include "enclave_library.h"
 
@@ -81,9 +84,16 @@ bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size) {
 }
 
 void create_account(unsigned char *new_user) {
-	unsigned char password[BUFF_SIZE] = {"U1TonO9yhUbzfi2WvCjXn4YIHV37vh7PolEI5UcMsT40wbiUDkLWPTFJWUXPgDn2vbToBqIxyHKWCul66pr48AliAwr8qEuSWrwpOPlhRK1UuPfcHY7B5pZR0UX4gUPjoJLx74VOQwXGp3wJXQLHLT2ttkpyTe7teXMCXfDbfko3a3258CQpbxqB79mqkOnDQanZrY9DXwfmw7TEqNUuToWODIBFtWJebY3gkYTAKYsJhvIEP9MtMrO3i24XnB29\0"};
+	// unsigned char password[BUFF_SIZE] = {"U1TonO9yhUbzfi2WvCjXn4YIHV37vh7PolEI5UcMsT40wbiUDkLWPTFJWUXPgDn2vbToBqIxyHKWCul66pr48AliAwr8qEuSWrwpOPlhRK1UuPfcHY7B5pZR0UX4gUPjoJLx74VOQwXGp3wJXQLHLT2ttkpyTe7teXMCXfDbfko3a3258CQpbxqB79mqkOnDQanZrY9DXwfmw7TEqNUuToWODIBFtWJebY3gkYTAKYsJhvIEP9MtMrO3i24XnB29\0"};
+	unsigned int seed;
+	if(syscall(SYS_getrandom, (unsigned char*)(&seed), 4, 0) < 0){
+    fprintf(stderr, "Error getting random seed\n");
+		return;
+  }
+	srand(seed);
 	for(unsigned int i=0; i < 256; i++) {
-		new_user[i] = password[i];
+		// new_user[i] = password[i];
+		new_user[i] = (unsigned char)(rand());
 	}
 }
 
@@ -158,11 +168,11 @@ char ask_user_c_l() {
 }
 */
 
-/*** 
- *** Function takes new user master password, enrypts, and stores in vault 
+/***
+ *** Function takes new user master password, enrypts, and stores in vault
  ***/
 /*
-uint8_t case_C_encrypt_and_write(unsigned int *done_flag, unsigned char *create_pw, 
+uint8_t case_C_encrypt_and_write(unsigned int *done_flag, unsigned char *create_pw,
 	unsigned int *size, unsigned char *cipher_pw) {
 	done_flag = 0;
 	create_user(create_pw, size, cipher_pw, done_flag);
@@ -179,12 +189,12 @@ uint8_t case_C_encrypt_and_write(unsigned int *done_flag, unsigned char *create_
 	return 1;
 }
 */
-/*** 
+/***
  *** Function checks to see if entered master password matches the encrypted
- *** one stored in the vault (authenticates user) 
+ *** one stored in the vault (authenticates user)
  ***/
 
-unsigned int login_check_user(unsigned int *done_flag, unsigned char *login_attempt, 
+unsigned int login_check_user(unsigned int *done_flag, unsigned char *login_attempt,
 	unsigned int *size, unsigned char *m_pword, unsigned int *found) {
 	//login(login_attempt);
 	//printf("login attempt: %s\n", login_attempt);
@@ -195,14 +205,14 @@ unsigned int login_check_user(unsigned int *done_flag, unsigned char *login_atte
 }
 
 
-/*** 
+/***
  *** Function checks to see if desired credentials exist in the vault
  *** Credentials are returned to user (can be accessed from main)
- *** Should take longer if more credentials are in vault (O(n)) 
+ *** Should take longer if more credentials are in vault (O(n))
  ***/
 /*
-bool k1_get_cred_check(unsigned char *user_cred_get, 
-	unsigned char *user_ret_web, unsigned char *user_ret_uname, 
+bool k1_get_cred_check(unsigned char *user_cred_get,
+	unsigned char *user_ret_web, unsigned char *user_ret_uname,
 	unsigned char *user_ret_pword, unsigned int *size, unsigned int *done_flag) {
 	uint32_t cred_found = false;
 	unsigned int i;
@@ -230,7 +240,7 @@ bool k1_get_cred_check(unsigned char *user_cred_get,
 	return 0;
 }
 */
-/*** 
+/***
  *** Function takes a new set of credentials from user, encrypts them,
  *** and stores them in the vault.
  ***/
@@ -238,7 +248,7 @@ bool k1_get_cred_check(unsigned char *user_cred_get,
 bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 	unsigned char *user_add_uname, unsigned char *user_add_pword,
 	unsigned char *encrypted_user_cred_web, unsigned char *encrypted_user_cred_uname,
-	unsigned char *encrypted_user_cred_pword, unsigned int *size, 
+	unsigned char *encrypted_user_cred_pword, unsigned int *size,
 	vault *vault, unsigned int *done_flag) {
 	if(vault->num_accounts < MAX_ACCOUNTS) {
 		done_flag = 0;
@@ -247,7 +257,7 @@ bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 			encrypted_user_cred_pword, &done_flag);
 		thread_join(&done_flag);
 		done_flag = 0;
-		
+
 		strncpy(vault->accounts[vault->num_accounts].web_name, encrypted_user_cred_web, *size);
 		strncpy(vault->accounts[vault->num_accounts].credentials.a_uname, encrypted_user_cred_uname, *size);
 		strncpy(vault->accounts[vault->num_accounts].credentials.a_pword, encrypted_user_cred_pword, *size);
@@ -274,7 +284,13 @@ int main(int argc, char** argv) {
 	enclave_init_with_file("password_manager.bin");
 	remove("test.dat");
 	time_t t;
-	srand((unsigned) time(&t));
+	unsigned int seed;
+	if(syscall(SYS_getrandom, (unsigned char*)(&seed), 4, 0) < 0){
+    fprintf(stderr, "Error getting random seed\n");
+    return -1;
+  }
+	srand(seed);
+	// srand((unsigned) time(&t));
 	create_vault();
 	vault vault;
 	uint32_t a = BUFF_SIZE;
@@ -305,7 +321,7 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	unsigned int found = login_check_user(&done_flag, 
+	unsigned int found = login_check_user(&done_flag,
 				login_password_test, size, vault.m_pword, &found);
 	if(!found)
 		return 0;
@@ -347,7 +363,7 @@ int main(int argc, char** argv) {
 				write_vault(&vault);
 				end = clock();												//lock end
 				create_time = ((double)end-begin)/CLOCKS_PER_SEC;
-				
+
 
 				unsigned int i;
 				begin = clock();											//clock begin
