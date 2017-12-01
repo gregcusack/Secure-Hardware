@@ -340,7 +340,7 @@ int main(int argc, char** argv) {
 	unsigned int loop_count = 0;
 	double create_time, read_time;
   printf("PASSWORD_SIZE,ADD_TIME,GET_TIME\n");
-	for(k = 4; k < 260; k+=1) {
+	for(k = 4; k < BUFF_SIZE; k+=4) {
 		for(itr = 0; itr < ITERATIONS; itr++) {
           memset(current_name, 0, BUFF_SIZE);
           memset(tmp_name, 0, BUFF_SIZE);
