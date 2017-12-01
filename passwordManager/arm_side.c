@@ -6,12 +6,12 @@
 #include "userclass.h"
 #endif
 
-// #ifndef MBSIDE_H
-// #define MBSIDE_H
-// #include "mbside.h"
-// #endif
-#include "arm_protocol_header.h"
-#include "enclave_library.h"
+#ifndef MBSIDE_H
+#define MBSIDE_H
+#include "mbside.h"
+#endif
+//#include "arm_protocol_header.h"
+//#include "enclave_library.h"
 
 #ifndef VAULT_H
 #define VAULT_H
@@ -84,15 +84,15 @@ bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size) {
 }
 
 void create_account(unsigned char *new_user) {
-	// unsigned char password[BUFF_SIZE] = {"U1TonO9yhUbzfi2WvCjXn4YIHV37vh7PolEI5UcMsT40wbiUDkLWPTFJWUXPgDn2vbToBqIxyHKWCul66pr48AliAwr8qEuSWrwpOPlhRK1UuPfcHY7B5pZR0UX4gUPjoJLx74VOQwXGp3wJXQLHLT2ttkpyTe7teXMCXfDbfko3a3258CQpbxqB79mqkOnDQanZrY9DXwfmw7TEqNUuToWODIBFtWJebY3gkYTAKYsJhvIEP9MtMrO3i24XnB29\0"};
-	unsigned int seed;
+//	unsigned char password[BUFF_SIZE] = {"U1TonO9yhUbzfi2WvCjXn4YIHV37vh7PolEI5UcMsT40wbiUDkLWPTFJWUXPgDn2vbToBqIxyHKWCul66pr48AliAwr8qEuSWrwpOPlhRK1UuPfcHY7B5pZR0UX4gUPjoJLx74VOQwXGp3wJXQLHLT2ttkpyTe7teXMCXfDbfko3a3258CQpbxqB79mqkOnDQanZrY9DXwfmw7TEqNUuToWODIBFtWJebY3gkYTAKYsJhvIEP9MtMrO3i24XnB29\0"};
+	unsigned int seed, i;
 	if(syscall(SYS_getrandom, (unsigned char*)(&seed), 4, 0) < 0){
     fprintf(stderr, "Error getting random seed\n");
 		return;
   }
 	srand(seed);
-	for(unsigned int i=0; i < 256; i++) {
-		// new_user[i] = password[i];
+	for(i=0; i < 256; i++) {
+//		new_user[i] = password[i];
 		new_user[i] = (unsigned char)(rand());
 	}
 }
@@ -273,15 +273,17 @@ bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 */
 
 void gen_random_password(unsigned char *s, const unsigned int len) {
+  int i;
 	static const char alphanum[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	for (int i = 0; i < len; ++i) {
+	for (i = 0; i < len; ++i) {
         s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
     }
     s[len] = 0;
 }
 
 int main(int argc, char** argv) {
-	enclave_init_with_file("password_manager.bin");
+  int i,k, itr;
+//	enclave_init_with_file("password_manager.bin");
 	remove("test.dat");
 	time_t t;
 	unsigned int seed;
@@ -311,7 +313,7 @@ int main(int argc, char** argv) {
 	create_account(create_pw);
 	done_flag = 0;
 
-	for(int i=0;i<BUFF_SIZE;i++) {
+	for(i=0;i<BUFF_SIZE;i++) {
 		login_password_test[i] = create_pw[i];
 	}
 
@@ -337,8 +339,12 @@ int main(int argc, char** argv) {
 	website user_ret;
 	unsigned int loop_count = 0;
 	double create_time, read_time;
-	for(int k = 4; k < 260; k+=1) {
-		for(int itr = 0; itr < ITERATIONS; itr++) {
+	for(k = 4; k < 260; k+=1) {
+		for(itr = 0; itr < ITERATIONS; itr++) {
+          memset(current_name, 0, BUFF_SIZE);
+          memset(tmp_name, 0, BUFF_SIZE);
+          memset(current_user, 0, BUFF_SIZE);
+          memset(current_password, 0, BUFF_SIZE);
 			sprintf((char*)current_name, "test%d_%d", itr,k);
 			sprintf((char*)tmp_name, "test%d_%d", itr,k);
 			sprintf((char*)current_user, "user%d_%d", itr,k);
