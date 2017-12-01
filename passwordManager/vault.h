@@ -1,5 +1,3 @@
-#define BUFF_SIZE 16
-#define MAX_USERS 1
 #ifndef USERCLASS_H
 #define USERCLASS_H
 #include "userclass.h"
