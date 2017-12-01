@@ -17,7 +17,10 @@ void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char
 	ret_user[size-1] = '\0';
 	//printf("here9\n");
 	//printf("encrypted: %s\n", ret_user);
-	memset(input_user, 0, size); //zero fill buffer
+	// memset(input_user, 0, size); //zero fill buffer
+  for(i=0; i<size; i++){
+    input_user[i] = 0;
+  }
 	//printf("here10\n");
 }
 
@@ -37,9 +40,15 @@ void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *ci
 void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
 	unsigned char decrypted[*size];
-    int i;
+    int i, found_temp = 1;
 	decrypt_m_pword(cipher_data, *size, decrypted);
-	if(memcmp(login_attempt, decrypted, 256) == 0) {
+	// if(memcmp(login_attempt, decrypted, 256) == 0) {
+	for(i=0; i<256; i++){
+		if(login_attempt[i] != decrypted[i]){
+			found_temp = 0;
+		}
+	}
+	if(found_temp == 1){
 		*found = true;
 	}
 	else {
@@ -113,4 +122,3 @@ void return_credentials(unsigned char *web_name, unsigned char *a_uname,
 	}
 	*done_flag = 1;
 }
-
