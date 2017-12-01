@@ -19,9 +19,7 @@ if __name__ == "__main__":
     if os.path.exists("test.dat"):
         os.remove("test.dat")
     child = pexpect.spawn("./password_manager")
-    child.expect("Create account or login\? \(C/L\): ")
     child.sendline("c")
-    child.expect("Create account or login\? \(C/L\): ", timeout=2)
     child.sendline("l")
     count = 0
     passwords = {}
@@ -29,35 +27,25 @@ if __name__ == "__main__":
     get_results = []
     for length in range(4, 260, 4):
         for iteration in range(ITERATIONS):
-            if(iteration == 0):
-                current_name = "aGkecI6VuFT"
-                current_user = "aGkecI6VuFT"
-                random_password = "aGkecI6VuFT"
-            else:
-                #print("here")
-                current_name = "test{}_{}".format(iteration, length)
-                current_user = "user{}_{}".format(iteration, length)
-                random_password = get_random_password(length)
+            #print("here")
+            current_name = "test{}_{}".format(iteration, length)
+            current_user = "user{}_{}".format(iteration, length)
+            random_password = get_random_password(length)
             passwords[current_name] = random_password
 
             child.sendline(current_name)
             child.sendline(current_name)
             child.sendline(random_password)
-            print("here2")
+            #print("here2")
             child.expect("exec_time_add: \d+.\d+")
             temp_add = float(child.after[15:])
-            child.expect("(success)|(error)");
-            print("here3")
+
+            #print("here3")
             child.sendline(current_name)
+            child.expect('(found)')
             child.expect("exec_time_get: \d+.\d+")
             temp_get = float(child.after[15:])
-            print("here4")
-            #child.expect('(found)|(not_present)')
-            child.expect('(found)')
-            #the case happens rarely (~3%) of the time, but when it does, don't want to include in results
-            #if not found, code will skip extra call to enclave
-            if(child.after.decode('ascii') == 'not_present'):
-                continue
+
             add_results.append((length, temp_add))
             get_results.append((length, temp_get))
             count += 1
@@ -74,5 +62,4 @@ if __name__ == "__main__":
             add_length, add_time = add_results[i]
             get_length, get_time = get_results[i]
             data_out.write("{},{},{}\n".format(add_length, add_time, get_time))
-
 

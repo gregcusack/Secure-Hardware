@@ -2,11 +2,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-// #include "microblaze_protocol_header.h"
-// #include "userclass.h"
-
 #define KEY ((const unsigned char *) "aGkecI6VuFTecB4hpTC9YLNjwkvFOMos9qGjulqlRhPBdysglPOhl4O077S5iei7kHx4mrqyw6WauleRgMvl2gXW1nUkLWzh0C8R8C0x6hRIhJNkOOVDhQjtuCUQd718IqxvcEsODa5Zu9TbkB2RcDMcAoXPruJkf4fwYwO4QqEP3NlqE2jCr5qi70pmePUIijBY2vVPJDdGj1lIjTplHmgf0ZHhBN75nD1yWutGLcmDwfS4dd8idwoM2yxMOz8n\0")
-									  
+
 void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char *ret_user) {
 	//printf("encrypt this: %s\n", input_user);
 	//printf("size: %d\n", size);
@@ -105,3 +102,4 @@ void return_credentials(unsigned char *web_name, unsigned char *a_uname,
 	}
 	*done_flag = 1;
 }
+
