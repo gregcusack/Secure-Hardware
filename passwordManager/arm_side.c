@@ -7,8 +7,8 @@
 // #define MBSIDE_H
 // #include "mbside.h"
 // #endif
-//include "arm_protocol_header.h"
-//include "enclave_library.h"
+include "arm_protocol_header.h"
+include "enclave_library.h"
 
 #ifndef VAULT_H
 #define VAULT_H
@@ -262,7 +262,7 @@ bool k2_add_cred_encrypt_write_vault(unsigned char *user_add_web,
 }
 
 int main(int argc, char** argv) {
-	//enclave_init_with_file("password_manager.bin");
+	enclave_init_with_file("password_manager.bin");
 	create_vault();
 	vault vault;
 	uint32_t a = BUFF_SIZE;
