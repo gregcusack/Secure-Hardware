@@ -339,6 +339,7 @@ int main(int argc, char** argv) {
 	website user_ret;
 	unsigned int loop_count = 0;
 	double create_time, read_time;
+  printf("PASSWORD_SIZE,ADD_TIME,GET_TIME\n");
 	for(k = 4; k < 260; k+=1) {
 		for(itr = 0; itr < ITERATIONS; itr++) {
           memset(current_name, 0, BUFF_SIZE);
@@ -396,10 +397,10 @@ int main(int argc, char** argv) {
 				read_time = ((double)end-begin)/CLOCKS_PER_SEC;
 				//printf("read_time: %f\n", ((double)end-begin)/CLOCKS_PER_SEC);
 				if(!cred_found) {
-					printf("ERROR: Data not found\n");
+					fprintf(stderr, "ERROR: Data not found\n");
 					return 0;
 				}
-				printf("password_leng: %d, create_time: %f, read_time: %f\n", k, create_time, read_time);
+				printf("%d,%f,%f\n", k, create_time, read_time);
 			}
 			//loop_count++;
 			//printf("loop_count: %d\n", loop_count);
