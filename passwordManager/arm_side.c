@@ -3,10 +3,10 @@
 #include "userclass.h"
 #endif
 
-// #ifndef MBSIDE_H
-// #define MBSIDE_H
-// #include "mbside.h"
-// #endif
+ #ifndef MBSIDE_H
+ #define MBSIDE_H
+ #include "mbside.h"
+ #endif
 //#include "arm_protocol_header.h"
 //#include "enclave_library.h"
 

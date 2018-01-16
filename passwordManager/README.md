@@ -34,3 +34,5 @@
 * To run:
 	* `./test`
 	* Then follow on screen instructions for user
+
+Compile with: gcc -Os -DCBC=1 -DECB=0 -DCTR=1 ../passwordManager/tiny-AES-c/aes.c arm_side.c mb_side.c -o passwordManager

@@ -1,8 +1,14 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 #ifndef USERCLASS_H
 #define USERCLASS_H
 #include "userclass.h"
+#endif
+
+#ifndef AES_H
+#define AES_H
+#include "tiny-AES-c/aes.h"
 #endif
 
 // #ifndef PTHREAD_H
