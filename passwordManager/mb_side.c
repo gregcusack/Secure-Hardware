@@ -86,7 +86,7 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	AES_init_ctx_iv(&ctx, key, iv);
 	printf("Login pw attempt: %s\n", login_attempt);
 	printf("Login stored cipher data: %s\n", cipher_data);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_data, 54);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_data, 64);//*size);
 	printf("Decrypted stored pw: %s\n", cipher_data);
 	if(!strcmp((char*)login_attempt, (char*)cipher_data)) {
 		*found = true;
