@@ -7,8 +7,8 @@
 // #define MBSIDE_H
 // #include "mbside.h"
 // #endif
-#include "arm_protocol_header.h"
-#include "enclave_library.h"
+//#include "arm_protocol_header.h"
+//#include "enclave_library.h"
 
 #ifndef VAULT_H
 #define VAULT_H
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
 	locks lock;
 	pthread_mutex_t m;								//40 bytes
 	pthread_cond_t w = PTHREAD_COND_INITIALIZER;
-	enclave_init_with_file("password_manager.bin");
+	//enclave_init_with_file("password_manager.bin");
 	lock.m = m;
 	lock.w = w;
 	create_vault();
