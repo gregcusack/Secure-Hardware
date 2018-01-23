@@ -205,10 +205,12 @@ int main(int argc, char** argv) {
 			}
 			case 'l':
 			case 'L': {
+					printf("login: Vault stored pword: %s\n", vault.m_pword);
 					login(login_attempt);
 					unsigned int found = false;
 					done_flag = 0;
 					check_user(login_attempt, size, vault.m_pword, &found, &done_flag);
+					printf("after check user: Vault stored pword: %s\n", vault.m_pword);
 					thread_join(&done_flag);
 					if(found) {
 						printf("User found!\n");
@@ -232,6 +234,7 @@ int main(int argc, char** argv) {
 									done_flag = 0;
 									if(cred_found)
 										break;
+								//printf("end: Vault stored pword: %s\n", vault.m_pword);
 								}
 								if(cred_found) {
 									return_credentials(vault.accounts[i].web_name,
@@ -252,6 +255,7 @@ int main(int argc, char** argv) {
 								}
 							}
 							else if(k == 2) {
+								printf("Vault stored pword: %s\n", vault.m_pword);
 								website user_add;
 								website encrypted_user_cred;
 								printf("Add credentials\n");

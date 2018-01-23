@@ -9,8 +9,9 @@
 #endif
 // #include "microblaze_protocol_header.h"
 // #include "userclass.h"
+#define SIZE 64
 
-#define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0:\0")
+//#define KEY ((const unsigned char *) "B&/n^!v8G`3BJL:B~q`~K(y!~;SBDw0:\0")
 uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
 uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
                         0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
@@ -44,15 +45,15 @@ static void xcrypt_ctr(const char* xcrypt, unsigned char *create_pw, unsigned ch
     printf("IN: %s\n", create_pw);
 
     AES_init_ctx_iv(&ctx, key, iv);
-    //AES_CTR_xcrypt_buffer(&ctx, in, 64);
-    AES_CTR_xcrypt_buffer(&ctx, create_pw, 64);
+    //AES_CTR_xcrypt_buffer(&ctx, in, SIZE);
+    AES_CTR_xcrypt_buffer(&ctx, create_pw, SIZE);
     printf("CTR %s: ", xcrypt);
     printf("OUT: %s\n", create_pw);
     
   
 }
 */
-
+/*
 void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char *ret_user) {
 	for(unsigned int i=0; i < size - 1; i++) {
 		ret_user[i] = input_user[i]^KEY[i];
@@ -60,20 +61,22 @@ void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char
 	ret_user[size-1] = '\0';
 	memset(input_user, 0, size); //zero fill buffer
 }
-
+*/
+/*                  
 void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decrypted) {
 	for(uint32_t i=0; i < size; i++) {
 		decrypted[i] = cipher_p[i]^KEY[i];
 	}
 }
-
+*/
 void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *cipher_pw, unsigned int *done_flag) {
+	memcpy(cipher_pw, create_pw, SIZE);
 	struct AES_ctx ctx;
 	AES_init_ctx_iv(&ctx, key, iv);
-	printf("IN: %s\n", create_pw);
-	AES_CTR_xcrypt_buffer(&ctx, create_pw, 64);// *size);
-	printf("OUT: %s\n", create_pw);
-	memcpy(cipher_pw, create_pw, *size);
+	printf("IN: %s\n", cipher_pw);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_pw, SIZE);// *size);
+	printf("OUT: %s\n", cipher_pw);
+	
 	//encrypt_ctr(create_pw, cipher_pw);
 	//encrypt_m_pword(create_pw, *size, cipher_pw);
 	*done_flag = 1;
@@ -84,11 +87,13 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
 	struct AES_ctx ctx;
 	AES_init_ctx_iv(&ctx, key, iv);
+	unsigned char tmp[SIZE];
+	memcpy(tmp, cipher_data, SIZE);
 	printf("Login pw attempt: %s\n", login_attempt);
-	printf("Login stored cipher data: %s\n", cipher_data);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_data, 64);//*size);
-	printf("Decrypted stored pw: %s\n", cipher_data);
-	if(!strcmp((char*)login_attempt, (char*)cipher_data)) {
+	printf("Login stored cipher data: %s\n", tmp);
+	AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);//*size);
+	printf("Decrypted stored pw: %s\n", tmp);
+	if(!strcmp((char*)login_attempt, (char*)tmp)) {
 		*found = true;
 	}
 	else {
@@ -112,6 +117,22 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found,
 	unsigned int *done_flag) {
+	unsigned char tmp[SIZE];
+	printf("web_name: %s\n", web_name);
+	memcpy(tmp, web_name, SIZE);
+	printf("tmp: %s\n", tmp);
+	struct AES_ctx ctx;
+	AES_init_ctx_iv(&ctx, key, iv);
+	AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);
+	printf("tmp after: %s\n", tmp);
+	if(!strcmp((char*)tmp, (char*)user_cred_get)) {
+		*cred_found = 1;
+	}
+	else {
+		*cred_found = 0;
+	}
+	*done_flag = 1;
+	/*
 	unsigned char decrypted[*size];
 	for(unsigned int j=0; j < *size; j++) {
 		decrypted[j] = web_name[j]^KEY[j];
@@ -123,6 +144,7 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 		*cred_found = 0;
 	}
 	*done_flag = 1;
+	*/
 }
 
 //return cipher_web_name/uname/pword/done_flag
@@ -130,6 +152,19 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
 	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
 	unsigned int *done_flag) {
+	memcpy(cipher_web_name, web_name, SIZE);
+	memcpy(cipher_a_uname, a_uname, SIZE);
+	memcpy(cipher_a_pword, a_pword, SIZE);
+	struct AES_ctx ctx;
+	AES_init_ctx_iv(&ctx, key, iv);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_web_name, SIZE);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_a_uname, SIZE);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_a_pword, SIZE);//*size);
+	//memset(web_name,0,SIZE);
+	//memset(a_uname,0,SIZE);
+	//memset(a_pword,0,SIZE);
+
+	/*
 	for(unsigned int i=0; i < *size; i++) {
 		cipher_web_name[i] = web_name[i]^KEY[i];
 		cipher_a_uname[i] = a_uname[i]^KEY[i];
@@ -141,6 +176,7 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 	memset(web_name,0,*size);
 	memset(a_uname,0,*size);
 	memset(a_pword,0,*size);
+	*/
 	*done_flag = 1;
 }
 
@@ -149,11 +185,25 @@ void return_credentials(unsigned char *web_name, unsigned char *a_uname,
 	unsigned char *a_pword, unsigned int *size,
 	unsigned char *ret_cred_web, unsigned char *ret_cred_uname,
 	unsigned char *ret_cred_pword, unsigned int *done_flag) {
+	memcpy(ret_cred_web, web_name, SIZE);
+	memcpy(ret_cred_uname, a_uname,SIZE);
+	memcpy(ret_cred_pword, a_pword, SIZE);
+	struct AES_ctx ctx;
+	AES_init_ctx_iv(&ctx, key, iv);
+	AES_CTR_xcrypt_buffer(&ctx, ret_cred_web, SIZE);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, ret_cred_uname, SIZE);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, ret_cred_pword, SIZE);//*size);
+	/*memcpy(ret_cred_web, web_name, SIZE);
+	memcpy(ret_cred_uname, a_uname,SIZE);
+	memcpy(ret_cred_pword, a_pword, SIZE);
+	*/
+	/*
 	for(unsigned int k=0; k < *size; k++) {
 		ret_cred_web[k] = web_name[k]^KEY[k];
 		ret_cred_uname[k] = a_uname[k]^KEY[k];
 		ret_cred_pword[k] = a_pword[k]^KEY[k];
 	}
+	*/
 	*done_flag = 1;
 }
 

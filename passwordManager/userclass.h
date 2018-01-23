@@ -1,4 +1,4 @@
-#define BUFF_SIZE 16
+#define BUFF_SIZE 64
 #define MAX_ACCOUNTS 5
 #include <stdint.h>
 
