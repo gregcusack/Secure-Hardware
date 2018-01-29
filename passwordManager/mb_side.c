@@ -11,7 +11,7 @@
 
 // #include "microblaze_protocol_header.h"
 // #include "userclass.h"
-#define SIZE 64
+#define SIZE BUFF_SIZE
 
 
 uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
@@ -44,14 +44,17 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, uint8_t *master_iv, unsigned int *found) {
 	unsigned char tmp[SIZE];
 	memcpy(tmp, cipher_data, SIZE);
-	//printf("Login pw attempt: %s\n", login_attempt);
-	//printf("Login stored cipher data: %s\n", tmp);
+	printf("Login pw attempt: %s\n", login_attempt);
+	printf("Login stored cipher data: %s\n", tmp);
 	xcrypt(tmp, master_iv);
-	//printf("Decrypted stored pw: %s\n", tmp);
-	if(!strcmp((char*)login_attempt, (char*)tmp))
-		*found = true;
-	else
-		*found = false;
+	printf("Decrypted stored pw: %s\n", tmp);
+	for(unsigned int i = 0; i < SIZE; i++) {
+		if(login_attempt[i] != tmp[i]) {
+			*found = false;
+			return;
+		}
+	}
+	*found = true;
 }
 
 //return cred_found

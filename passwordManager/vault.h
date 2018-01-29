@@ -1,4 +1,4 @@
-#define BUFF_SIZE 64
+#define BUFF_SIZE 256
 #define IV_SIZE 16
 #define MAX_USERS 1
 #ifndef USERCLASS_H

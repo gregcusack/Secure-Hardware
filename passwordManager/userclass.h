@@ -1,5 +1,5 @@
-#define BUFF_SIZE 64
-#define MAX_ACCOUNTS 5
+#define BUFF_SIZE 256
+#define MAX_ACCOUNTS 6325
 #define IV_SIZE 16
 #include <stdint.h>
 
