@@ -18,6 +18,7 @@ uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 
 uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
                         0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
 
+/*
 void encrypt(unsigned char *m_pword, uint8_t *master_iv) {
 	//uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
 	//uint8_t _iv[16 + 1];
@@ -35,11 +36,26 @@ void decrypt(unsigned char *cipher_pword, uint8_t *master_iv) {
 	AES_init_ctx_iv(&ctx, key, master_iv);
 	AES_CTR_xcrypt_buffer(&ctx, cipher_pword, SIZE);
 }
+*/
+
+void gen_iv(uint8_t *_iv) {
+	for(int i=0; i < 16; i++) {
+		sprintf((char*)_iv + i, "%x", rand() % 16);
+	}
+	printf("Hex string (iv): %s", _iv);
+}
+
+void xcrypt(unsigned char *in_str, uint8_t *_iv) {
+	struct AES_ctx ctx;
+	AES_init_ctx_iv(&ctx, key, _iv);
+	AES_CTR_xcrypt_buffer(&ctx, in_str, SIZE);
+}
 
 void create_user(unsigned char *create_pw, unsigned int *size, uint8_t *master_iv_in, unsigned char *cipher_pw, unsigned int *done_flag, uint8_t *master_iv_out) {
 	memcpy(cipher_pw, create_pw, SIZE);
 	printf("IN: %s\n", cipher_pw);
-	encrypt(cipher_pw, master_iv_out);
+	gen_iv(master_iv_out);
+	xcrypt(cipher_pw, master_iv_out);
 	printf("here\n");
 	printf("OUT: %s\n", cipher_pw);
 	*done_flag = 1;
@@ -63,7 +79,8 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	memcpy(tmp, cipher_data, SIZE);
 	printf("Login pw attempt: %s\n", login_attempt);
 	printf("Login stored cipher data: %s\n", tmp);
-	decrypt(tmp, master_iv);
+	xcrypt(tmp, master_iv);
+	//decrypt(tmp, master_iv);
 	//struct AES_ctx ctx;
 	//AES_init_ctx_iv(&ctx, key, master_iv);
 	//unsigned char tmp[SIZE];
