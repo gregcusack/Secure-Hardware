@@ -6,6 +6,10 @@
 #include "userclass.h"
 #endif
 
+#define CBC 1
+#define CTR 1
+#define ECB 0
+
 #ifndef AES_H
 #define AES_H
 #include "tiny-AES-c/aes.h"
