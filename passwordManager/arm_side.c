@@ -15,13 +15,6 @@
 #include "vault.h"
 #endif
 
-/*
-#ifndef PTHREAD_H
-#define PTHREAD_H
-#include <pthread.h>
-#endif
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -140,17 +133,6 @@ void get_credentials(unsigned char *get_cred) {
 	getchar();
 }
 
-//void thread_join(unsigned int *done_flag) {
-//	while (done_flag == 0)
-//		continue;
-	/*
-	pthread_mutex_lock(&(lock->m));
- 	while (lock->done == 0)
-  		pthread_cond_wait(&(lock->w), &(lock->m));
-  	pthread_mutex_unlock(&(lock->m));
-  	*/
-//}
-
 void create_vault() {
 	FILE *f;
 	f = fopen("test.dat","a+");
@@ -162,22 +144,15 @@ void create_vault() {
 }
 
 int main(int argc, char** argv) {
-	//locks lock;
-	//pthread_mutex_t m;								//40 bytes
-	//pthread_cond_t w = PTHREAD_COND_INITIALIZER;
 	//enclave_init_with_file("password_manager.bin");
-	//lock.m = m;
-	//lock.w = w;
 	create_vault();
 	vault vault;
 	uint32_t a = BUFF_SIZE;
 	uint32_t *size = &a;
-	unsigned int done_flag;
 	while (1) {
 		if(!read_vault(&vault)) {
 			vault.num_accounts = 0;
 			vault.full = false;
-			//printf("Vault empty\n");
 		}
 		unsigned char create_pw[BUFF_SIZE];
 		unsigned char cipher_pw[BUFF_SIZE];
@@ -196,10 +171,8 @@ int main(int argc, char** argv) {
 					break;
 				}
 				create_account(create_pw);
-				done_flag = 0;
-				create_user(create_pw, size, iv_in, cipher_pw, &done_flag, master_iv_out);
-				printf("after create user_store\n");
-				//thread_join(&done_flag);
+				create_user(create_pw, size, iv_in, cipher_pw, master_iv_out);
+				//printf("after create user_store\n");
 				if(!vault_store_user(&vault, cipher_pw, size, master_iv_out)) { //must wait for lock before calling this
 					printf("Error adding acound: max number of users (%d) reached\n", MAX_USERS);
 				}
@@ -211,19 +184,16 @@ int main(int argc, char** argv) {
 			}
 			case 'l':
 			case 'L': {
-					printf("login: Vault stored pword: %s\n", vault.m_pword);
+					//printf("login: Vault stored pword: %s\n", vault.m_pword);
 					login(login_attempt);
 					unsigned int found = false;
-					done_flag = 0;
-					check_user(login_attempt, size, vault.m_pword, vault.m_iv, &found, &done_flag);
-					printf("after check user: Vault stored pword: %s\n", vault.m_pword);
-					//thread_join(&done_flag);
+					check_user(login_attempt, size, vault.m_pword, vault.m_iv, &found);
+					//printf("after check user: Vault stored pword: %s\n", vault.m_pword);
 					if(found) {
 						printf("User found!\n");
 						while(1) {
 							uint32_t k = get_or_add();
 							unsigned char user_cred_get[BUFF_SIZE];
-							done_flag = 0;
 							if(k == 1) {
 								website user_ret;
 								unsigned char ret_cred_web[BUFF_SIZE];
@@ -235,13 +205,9 @@ int main(int argc, char** argv) {
 								unsigned int i;
 								for(i=0; i<vault.num_accounts; i++) {
 									decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
-										vault.accounts[i].web_iv, user_cred_get, size, &cred_found, 
-										&done_flag);
-									//thread_join(&done_flag);
-									done_flag = 0;
+										vault.accounts[i].web_iv, user_cred_get, size, &cred_found);
 									if(cred_found)
 										break;
-								//printf("end: Vault stored pword: %s\n", vault.m_pword);
 								}
 								if(cred_found) {
 									return_credentials(vault.accounts[i].web_name,
@@ -250,10 +216,7 @@ int main(int argc, char** argv) {
 										vault.accounts[i].web_iv,
 										size,
 										user_ret.web_name, user_ret.credentials.a_uname,
-										user_ret.credentials.a_pword,
-										&done_flag);
-									//thread_join(&done_flag);
-									done_flag = 0;
+										user_ret.credentials.a_pword);
 									printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
 										user_ret.web_name, user_ret.credentials.a_uname,
 										user_ret.credentials.a_pword);
@@ -263,25 +226,20 @@ int main(int argc, char** argv) {
 								}
 							}
 							else if(k == 2) {
-								printf("Vault stored pword: %s\n", vault.m_pword);
+								//printf("Vault stored pword: %s\n", vault.m_pword);
 								website user_add;
 								website encrypted_user_cred;
 								uint8_t iv_out[IV_SIZE];
 								printf("Add credentials\n");
 								if(vault.num_accounts < MAX_ACCOUNTS) {
 									add_credentials(&user_add);
-									done_flag = 0;
 									encrypt_credentials(user_add.web_name, user_add.credentials.a_uname,
 										user_add.credentials.a_pword, size, iv_in,
 										encrypted_user_cred.web_name,
 										encrypted_user_cred.credentials.a_uname,
 										encrypted_user_cred.credentials.a_pword,
-										iv_out,
-										&done_flag);
-									//thread_join(&done_flag);
-									done_flag = 0;
+										iv_out);
 									memcpy(encrypted_user_cred.web_iv, iv_out, IV_SIZE);
-									//encrypted_user_cred.web_iv = iv_out;
 									vault.accounts[vault.num_accounts] = encrypted_user_cred;
 									vault.num_accounts++;
 									write_vault(&vault);
