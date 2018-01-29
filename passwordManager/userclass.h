@@ -1,5 +1,6 @@
 #define BUFF_SIZE 64
 #define MAX_ACCOUNTS 5
+#define IV_SIZE 16
 #include <stdint.h>
 
 #ifndef PTHREAD_H
@@ -15,6 +16,7 @@ typedef struct web_login { //32 bytes
 typedef struct website { // 48 bytes
 	unsigned char web_name[BUFF_SIZE]; //website name  //16 bytes
 	web_login credentials;	//32 bytes  //this will be stored as copy, change in future?
+	uint8_t web_iv[IV_SIZE];
 } website;
 
 typedef struct user_account {	//276
@@ -24,7 +26,7 @@ typedef struct user_account {	//276
 	uint32_t num_accounts;// = 0;		//4 bytes
 } user_account;
 
-typedef struct login_struct {
+/*typedef struct login_struct {
 	unsigned char l_uname[BUFF_SIZE];
 	unsigned char l_pword[BUFF_SIZE];
 } login_struct;
@@ -34,7 +36,7 @@ typedef struct locks { //100 bytes
 	pthread_mutex_t m;								//40 bytes		
 	pthread_cond_t w;	//56 bytes
 } locks;
-
+*/
 
 /*
 typedef struct thead_args {

@@ -15,10 +15,12 @@
 #include "vault.h"
 #endif
 
+/*
 #ifndef PTHREAD_H
 #define PTHREAD_H
 #include <pthread.h>
 #endif
+*/
 
 #include <stdio.h>
 #include <string.h>
@@ -66,7 +68,7 @@ bool read_vault(vault *vault) {
 	return true;
 }
 
-bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size) {
+bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size, uint8_t *master_iv) {
     unsigned int i;
 	if(vault->full == true) {
 		return false;
@@ -75,6 +77,7 @@ bool vault_store_user(vault *vault, unsigned char *store, unsigned int *size) {
 	for(i = 0; i < *size; i++) {
 		vault->m_pword[i] = store[i];
 	}
+	memcpy(vault->m_iv, master_iv, IV_SIZE);
 	vault->full = true;
 	//printf("vault_store_user: uname in vault: %s\n", vault->user_store[vault->num_users].m_uname);
 	printf("vault_store_user: pword in vault: %s\n", vault->m_pword);
@@ -137,16 +140,16 @@ void get_credentials(unsigned char *get_cred) {
 	getchar();
 }
 
-void thread_join(unsigned int *done_flag) {
-	while (done_flag == 0)
-		continue;
+//void thread_join(unsigned int *done_flag) {
+//	while (done_flag == 0)
+//		continue;
 	/*
 	pthread_mutex_lock(&(lock->m));
  	while (lock->done == 0)
   		pthread_cond_wait(&(lock->w), &(lock->m));
   	pthread_mutex_unlock(&(lock->m));
   	*/
-}
+//}
 
 void create_vault() {
 	FILE *f;
@@ -159,12 +162,12 @@ void create_vault() {
 }
 
 int main(int argc, char** argv) {
-	locks lock;
-	pthread_mutex_t m;								//40 bytes
-	pthread_cond_t w = PTHREAD_COND_INITIALIZER;
+	//locks lock;
+	//pthread_mutex_t m;								//40 bytes
+	//pthread_cond_t w = PTHREAD_COND_INITIALIZER;
 	//enclave_init_with_file("password_manager.bin");
-	lock.m = m;
-	lock.w = w;
+	//lock.m = m;
+	//lock.w = w;
 	create_vault();
 	vault vault;
 	uint32_t a = BUFF_SIZE;
@@ -179,6 +182,8 @@ int main(int argc, char** argv) {
 		unsigned char create_pw[BUFF_SIZE];
 		unsigned char cipher_pw[BUFF_SIZE];
 		unsigned char login_attempt[BUFF_SIZE];
+		uint8_t master_iv_in[IV_SIZE + 1];
+		uint8_t master_iv_out[IV_SIZE + 1];
 		printf("Create account or login? (C/L): ");
 		char c;
 		scanf(" %c", &c);
@@ -192,9 +197,10 @@ int main(int argc, char** argv) {
 				}
 				create_account(create_pw);
 				done_flag = 0;
-				create_user(create_pw, size, cipher_pw, &done_flag);
-				thread_join(&done_flag);
-				if(!vault_store_user(&vault, cipher_pw, size)) { //must wait for lock before calling this
+				create_user(create_pw, size, master_iv_in, cipher_pw, &done_flag, master_iv_out);
+				printf("after create user_store\n");
+				//thread_join(&done_flag);
+				if(!vault_store_user(&vault, cipher_pw, size, master_iv_out)) { //must wait for lock before calling this
 					printf("Error adding acound: max number of users (%d) reached\n", MAX_USERS);
 				}
 				else {
@@ -209,9 +215,9 @@ int main(int argc, char** argv) {
 					login(login_attempt);
 					unsigned int found = false;
 					done_flag = 0;
-					check_user(login_attempt, size, vault.m_pword, &found, &done_flag);
+					check_user(login_attempt, size, vault.m_pword, vault.m_iv, &found, &done_flag);
 					printf("after check user: Vault stored pword: %s\n", vault.m_pword);
-					thread_join(&done_flag);
+					//thread_join(&done_flag);
 					if(found) {
 						printf("User found!\n");
 						while(1) {
@@ -230,7 +236,7 @@ int main(int argc, char** argv) {
 								for(i=0; i<vault.num_accounts; i++) {
 									decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
 										user_cred_get, size, &cred_found, &done_flag);
-									thread_join(&done_flag);
+									//thread_join(&done_flag);
 									done_flag = 0;
 									if(cred_found)
 										break;
@@ -244,7 +250,7 @@ int main(int argc, char** argv) {
 										user_ret.web_name, user_ret.credentials.a_uname,
 										user_ret.credentials.a_pword,
 										&done_flag);
-									thread_join(&done_flag);
+									//thread_join(&done_flag);
 									done_flag = 0;
 									printf("Credentials found for \"%s\".\nUsername: %s\nPassword: %s\n",
 										user_ret.web_name, user_ret.credentials.a_uname,
@@ -268,7 +274,7 @@ int main(int argc, char** argv) {
 										encrypted_user_cred.credentials.a_uname,
 										encrypted_user_cred.credentials.a_pword,
 										&done_flag);
-									thread_join(&done_flag);
+									//thread_join(&done_flag);
 									done_flag = 0;
 									vault.accounts[vault.num_accounts] = encrypted_user_cred;
 									vault.num_accounts++;

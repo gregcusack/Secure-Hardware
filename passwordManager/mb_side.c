@@ -1,12 +1,14 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <stdlib.h>
 
 #ifndef MBSIDE_H
 #define MBSIDE_H
 #include "mbside.h"
 #endif
+
+
 // #include "microblaze_protocol_header.h"
 // #include "userclass.h"
 #define SIZE 64
@@ -15,83 +17,58 @@
 uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
 uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
                         0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
-/*
-static void encrypt_ctr(unsigned char *create_pw, unsigned char *cipher_pw);
-static void decrypt_ctr(unsigned char *create_pw, unsigned char *cipher_pw);
-static void xcrypt_ctr(const char* xcrypt, unsigned char *create_pw, unsigned char *cipher_pw);
 
-static void encrypt_ctr(unsigned char *create_pw, unsigned char *cipher_pw) {
-    xcrypt_ctr("encrypt", create_pw, cipher_pw);
-}
-
-static void decrypt_ctr(unsigned char *create_pw, unsigned char *cipher_pw) {
-    xcrypt_ctr("decrypt", create_pw, cipher_pw);
-}
-
-static void xcrypt_ctr(const char* xcrypt, unsigned char *create_pw, unsigned char *cipher_pw) {
+void encrypt(unsigned char *m_pword, uint8_t *master_iv) {
+	//uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
+	//uint8_t _iv[16 + 1];
+	for(int i=0; i < 16; i++) {
+		sprintf((char*)master_iv + i, "%x", rand() % 16);
+	}
+	printf("Hex string (iv): %s", iv);
 	struct AES_ctx ctx;
-	printf("IN: %s\n", create_pw);
-	AES_CTR_xcrypt_buffer(ctx, create_pw, *size);
-	printf("OUT: %s\n", create_pw);
+	AES_init_ctx_iv(&ctx, key, master_iv);
+	AES_CTR_xcrypt_buffer(&ctx, m_pword, SIZE);
+}
 
-	uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
-                        0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
-    uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
-    uint8_t out[64] = { 0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96, 0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
-                        0xae, 0x2d, 0x8a, 0x57, 0x1e, 0x03, 0xac, 0x9c, 0x9e, 0xb7, 0x6f, 0xac, 0x45, 0xaf, 0x8e, 0x51,
-                        0x30, 0xc8, 0x1c, 0x46, 0xa3, 0x5c, 0xe4, 0x11, 0xe5, 0xfb, 0xc1, 0x19, 0x1a, 0x0a, 0x52, 0xef,
-                        0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17, 0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10 };
-    struct AES_ctx ctx;
-    printf("IN: %s\n", create_pw);
+void decrypt(unsigned char *cipher_pword, uint8_t *master_iv) {
+	struct AES_ctx ctx;
+	AES_init_ctx_iv(&ctx, key, master_iv);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_pword, SIZE);
+}
 
-    AES_init_ctx_iv(&ctx, key, iv);
-    //AES_CTR_xcrypt_buffer(&ctx, in, SIZE);
-    AES_CTR_xcrypt_buffer(&ctx, create_pw, SIZE);
-    printf("CTR %s: ", xcrypt);
-    printf("OUT: %s\n", create_pw);
-    
-  
-}
-*/
-/*
-void encrypt_m_pword(unsigned char *input_user, unsigned int size, unsigned char *ret_user) {
-	for(unsigned int i=0; i < size - 1; i++) {
-		ret_user[i] = input_user[i]^KEY[i];
-	}
-	ret_user[size-1] = '\0';
-	memset(input_user, 0, size); //zero fill buffer
-}
-*/
-/*                  
-void decrypt_m_pword(unsigned char* cipher_p, uint32_t size, unsigned char* decrypted) {
-	for(uint32_t i=0; i < size; i++) {
-		decrypted[i] = cipher_p[i]^KEY[i];
-	}
-}
-*/
-void create_user(unsigned char *create_pw, unsigned int *size, unsigned char *cipher_pw, unsigned int *done_flag) {
+void create_user(unsigned char *create_pw, unsigned int *size, uint8_t *master_iv_in, unsigned char *cipher_pw, unsigned int *done_flag, uint8_t *master_iv_out) {
 	memcpy(cipher_pw, create_pw, SIZE);
+	printf("IN: %s\n", cipher_pw);
+	encrypt(cipher_pw, master_iv_out);
+	printf("here\n");
+	printf("OUT: %s\n", cipher_pw);
+	*done_flag = 1;
+	/*
 	struct AES_ctx ctx;
 	AES_init_ctx_iv(&ctx, key, iv);
 	printf("IN: %s\n", cipher_pw);
 	AES_CTR_xcrypt_buffer(&ctx, cipher_pw, SIZE);// *size);
 	printf("OUT: %s\n", cipher_pw);
+	*/
 	
 	//encrypt_ctr(create_pw, cipher_pw);
 	//encrypt_m_pword(create_pw, *size, cipher_pw);
-	*done_flag = 1;
+	//*done_flag = 1;
 }
 
 //return found, done_flag
 void check_user(unsigned char *login_attempt, unsigned int *size,
-	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag) {
-	struct AES_ctx ctx;
-	AES_init_ctx_iv(&ctx, key, iv);
+	unsigned char *cipher_data, uint8_t *master_iv, unsigned int *found, unsigned int *done_flag) {
 	unsigned char tmp[SIZE];
 	memcpy(tmp, cipher_data, SIZE);
 	printf("Login pw attempt: %s\n", login_attempt);
 	printf("Login stored cipher data: %s\n", tmp);
-	AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);//*size);
+	decrypt(tmp, master_iv);
+	//struct AES_ctx ctx;
+	//AES_init_ctx_iv(&ctx, key, master_iv);
+	//unsigned char tmp[SIZE];
+	//memcpy(tmp, cipher_data, SIZE);
+	//AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);//*size);
 	printf("Decrypted stored pw: %s\n", tmp);
 	if(!strcmp((char*)login_attempt, (char*)tmp)) {
 		*found = true;

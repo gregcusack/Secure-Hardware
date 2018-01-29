@@ -20,12 +20,16 @@ void create_user(user_account *user_data, uint32_t *pword_len,
 	user_account *user_cipher);
 */
 //return cipher_pw, done_flag
-void create_user(unsigned char *create_pw, unsigned int *size,
-	unsigned char *cipher_pw, unsigned int *done_flag);
+//void create_user(unsigned char *create_pw, unsigned int *size,
+//	unsigned char *cipher_pw, unsigned int *done_flag);
+
+void create_user(unsigned char *create_pw, unsigned int *size, 
+	uint8_t *master_iv_in, unsigned char *cipher_pw, 
+	unsigned int *done_flag, uint8_t *master_iv_out);
 
 //return found, done flag
 void check_user(unsigned char *login_attempt, unsigned int *size,
-	unsigned char *cipher_data, unsigned int *found, unsigned int *done_flag);
+	unsigned char *cipher_data, uint8_t *master_iv, unsigned int *found, unsigned int *done_flag);
 
 //return cred_found, done_flag
 void decrypt_and_check_for_web_credentials(unsigned char *web_name,
