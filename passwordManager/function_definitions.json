@@ -6,24 +6,29 @@
         {
           "name":"create_pw",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"size",
           "type":"unsigned int",
           "length":4
+        },
+        {
+          "name":"master_iv_in",
+          "type":"unsigned char",
+          "length":16
         }
       ],
       "outputs" : [
         {
           "name":"cipher_pw",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":4
+          "name":"master_iv_out",
+          "type":"unsigned char",
+          "length":16
         }
       ]
     },
@@ -33,7 +38,7 @@
         {
           "name":"login_attempt",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"size",
@@ -41,7 +46,12 @@
           "length":4
         },
         {
-          "name":"cipher_data",
+          "name":"cipher_date",
+          "type":"unsigned char",
+          "length":64
+        },
+        {
+          "name":"master_iv",
           "type":"unsigned char",
           "length":16
         }
@@ -49,11 +59,6 @@
       "outputs" : [
         {
           "name":"found",
-          "type":"unsigned int",
-          "length":4
-        },
-        {
-          "name":"done_flag",
           "type":"unsigned int",
           "length":4
         }
@@ -65,12 +70,17 @@
         {
           "name":"web_name",
           "type":"unsigned char",
+          "length":64
+        },
+        {
+          "name":"iv_in",
+          "type":"unsigned char",
           "length":16
         },
         {
           "name":"user_cred_get",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"size",
@@ -83,11 +93,6 @@
           "name":"cred_found",
           "type":"unsigned int",
           "length":4
-        },
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":4
         }
       ]
     },
@@ -97,15 +102,20 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"a_pword",
+          "type":"unsigned char",
+          "length":64
+        },
+        {
+          "name":"iv_in",
           "type":"unsigned char",
           "length":16
         },
@@ -119,22 +129,17 @@
         {
           "name":"ret_cred_web",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"ret_cred_uname",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"ret_cred_pword",
           "type":"unsigned char",
-          "length":16
-        },
-        {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":4
+          "length":64
         }
 
       ]
@@ -145,44 +150,49 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"size",
           "type":"unsigned int",
           "length":4
+        },
+        {
+          "name":"iv_in",
+          "type":"unsigned char",
+          "length":16
         }
       ],
       "outputs" : [
         {
           "name":"cipher_web_name",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"cipher_a_uname",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
           "name":"cipher_a_pword",
           "type":"unsigned char",
-          "length":16
+          "length":64
         },
         {
-          "name":"done_flag",
-          "type":"unsigned int",
-          "length":4
+          "name":"iv_out",
+          "type":"unsigned char",
+          "length":16
         }
       ]
     }
