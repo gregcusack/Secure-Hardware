@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 		unsigned char create_pw[BUFF_SIZE];
 		unsigned char cipher_pw[BUFF_SIZE];
 		unsigned char login_attempt[BUFF_SIZE];
-		uint8_t master_iv_in[IV_SIZE + 1];
+		uint8_t iv_in[IV_SIZE + 1];
 		uint8_t master_iv_out[IV_SIZE + 1];
 		printf("Create account or login? (C/L): ");
 		char c;
@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
 				}
 				create_account(create_pw);
 				done_flag = 0;
-				create_user(create_pw, size, master_iv_in, cipher_pw, &done_flag, master_iv_out);
+				create_user(create_pw, size, iv_in, cipher_pw, &done_flag, master_iv_out);
 				printf("after create user_store\n");
 				//thread_join(&done_flag);
 				if(!vault_store_user(&vault, cipher_pw, size, master_iv_out)) { //must wait for lock before calling this
@@ -235,7 +235,8 @@ int main(int argc, char** argv) {
 								unsigned int i;
 								for(i=0; i<vault.num_accounts; i++) {
 									decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
-										user_cred_get, size, &cred_found, &done_flag);
+										vault.accounts[i].web_iv, user_cred_get, size, &cred_found, 
+										&done_flag);
 									//thread_join(&done_flag);
 									done_flag = 0;
 									if(cred_found)
@@ -246,6 +247,7 @@ int main(int argc, char** argv) {
 									return_credentials(vault.accounts[i].web_name,
 										vault.accounts[i].credentials.a_uname,
 										vault.accounts[i].credentials.a_pword,
+										vault.accounts[i].web_iv,
 										size,
 										user_ret.web_name, user_ret.credentials.a_uname,
 										user_ret.credentials.a_pword,
@@ -264,18 +266,22 @@ int main(int argc, char** argv) {
 								printf("Vault stored pword: %s\n", vault.m_pword);
 								website user_add;
 								website encrypted_user_cred;
+								uint8_t iv_out[IV_SIZE];
 								printf("Add credentials\n");
 								if(vault.num_accounts < MAX_ACCOUNTS) {
 									add_credentials(&user_add);
 									done_flag = 0;
 									encrypt_credentials(user_add.web_name, user_add.credentials.a_uname,
-										user_add.credentials.a_pword, size,
+										user_add.credentials.a_pword, size, iv_in,
 										encrypted_user_cred.web_name,
 										encrypted_user_cred.credentials.a_uname,
 										encrypted_user_cred.credentials.a_pword,
+										iv_out,
 										&done_flag);
 									//thread_join(&done_flag);
 									done_flag = 0;
+									memcpy(encrypted_user_cred.web_iv, iv_out, IV_SIZE);
+									//encrypted_user_cred.web_iv = iv_out;
 									vault.accounts[vault.num_accounts] = encrypted_user_cred;
 									vault.num_accounts++;
 									write_vault(&vault);

@@ -32,20 +32,20 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char *cipher_data, uint8_t *master_iv, unsigned int *found, unsigned int *done_flag);
 
 //return cred_found, done_flag
-void decrypt_and_check_for_web_credentials(unsigned char *web_name,
+void decrypt_and_check_for_web_credentials(unsigned char *web_name, uint8_t *iv_in,
 	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found,
 	unsigned int *done_flag);
 
 //return ret_cred_web/uname/pword/done_flag
 void return_credentials(unsigned char *web_name, unsigned char *a_uname,
-	unsigned char *a_pword, unsigned int *size,
+	unsigned char *a_pword, uint8_t *iv_in, unsigned int *size,
 	unsigned char *ret_cred_web, unsigned char *ret_cred_uname,
 	unsigned char *ret_cred_pword, unsigned int *done_flag);
 
 //return cipher_web_name/uname/pword/done_flag
 void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
-	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
-	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
+	unsigned char *a_pword, unsigned int *size, uint8_t *iv_in, unsigned char *cipher_web_name,
+	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword, uint8_t *iv_out,
 	unsigned int *done_flag);
 
 /*

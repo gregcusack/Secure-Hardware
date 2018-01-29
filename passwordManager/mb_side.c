@@ -18,26 +18,6 @@ uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 
 uint8_t key[32] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
                         0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
 
-/*
-void encrypt(unsigned char *m_pword, uint8_t *master_iv) {
-	//uint8_t iv[16]  = { 0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
-	//uint8_t _iv[16 + 1];
-	for(int i=0; i < 16; i++) {
-		sprintf((char*)master_iv + i, "%x", rand() % 16);
-	}
-	printf("Hex string (iv): %s", iv);
-	struct AES_ctx ctx;
-	AES_init_ctx_iv(&ctx, key, master_iv);
-	AES_CTR_xcrypt_buffer(&ctx, m_pword, SIZE);
-}
-
-void decrypt(unsigned char *cipher_pword, uint8_t *master_iv) {
-	struct AES_ctx ctx;
-	AES_init_ctx_iv(&ctx, key, master_iv);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_pword, SIZE);
-}
-*/
-
 void gen_iv(uint8_t *_iv) {
 	for(int i=0; i < 16; i++) {
 		sprintf((char*)_iv + i, "%x", rand() % 16);
@@ -108,16 +88,17 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 }
 
 //return cred_found, done_flag
-void decrypt_and_check_for_web_credentials(unsigned char *web_name,
+void decrypt_and_check_for_web_credentials(unsigned char *web_name, uint8_t *iv_in,
 	unsigned char *user_cred_get, unsigned int *size, unsigned int *cred_found,
 	unsigned int *done_flag) {
 	unsigned char tmp[SIZE];
 	printf("web_name: %s\n", web_name);
 	memcpy(tmp, web_name, SIZE);
 	printf("tmp: %s\n", tmp);
-	struct AES_ctx ctx;
-	AES_init_ctx_iv(&ctx, key, iv);
-	AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);
+	xcrypt(tmp, iv_in);
+	//struct AES_ctx ctx;
+	//AES_init_ctx_iv(&ctx, key, iv);
+	//AES_CTR_xcrypt_buffer(&ctx, tmp, SIZE);
 	printf("tmp after: %s\n", tmp);
 	if(!strcmp((char*)tmp, (char*)user_cred_get)) {
 		*cred_found = 1;
@@ -143,17 +124,23 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 
 //return cipher_web_name/uname/pword/done_flag
 void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
-	unsigned char *a_pword, unsigned int *size, unsigned char *cipher_web_name,
-	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword,
+	unsigned char *a_pword, unsigned int *size, uint8_t *iv_in, unsigned char *cipher_web_name,
+	unsigned char *cipher_a_uname, unsigned char *cipher_a_pword, uint8_t *iv_out,
 	unsigned int *done_flag) {
 	memcpy(cipher_web_name, web_name, SIZE);
 	memcpy(cipher_a_uname, a_uname, SIZE);
 	memcpy(cipher_a_pword, a_pword, SIZE);
+	gen_iv(iv_out);
+	xcrypt(cipher_web_name, iv_out);
+	xcrypt(cipher_a_uname, iv_out);
+	xcrypt(cipher_a_pword, iv_out);
+	/*
 	struct AES_ctx ctx;
 	AES_init_ctx_iv(&ctx, key, iv);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_web_name, SIZE);//*size);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_a_uname, SIZE);//*size);
-	AES_CTR_xcrypt_buffer(&ctx, cipher_a_pword, SIZE);//*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_web_name, SIZE);//\*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_a_uname, SIZE);//\*size);
+	AES_CTR_xcrypt_buffer(&ctx, cipher_a_pword, SIZE);//\*size);
+	*/
 	//memset(web_name,0,SIZE);
 	//memset(a_uname,0,SIZE);
 	//memset(a_pword,0,SIZE);
@@ -176,17 +163,21 @@ void encrypt_credentials(unsigned char *web_name, unsigned char *a_uname,
 
 //return ret_cred_web/uname/pword/done_flag
 void return_credentials(unsigned char *web_name, unsigned char *a_uname,
-	unsigned char *a_pword, unsigned int *size,
+	unsigned char *a_pword, uint8_t *iv_in, unsigned int *size,
 	unsigned char *ret_cred_web, unsigned char *ret_cred_uname,
 	unsigned char *ret_cred_pword, unsigned int *done_flag) {
 	memcpy(ret_cred_web, web_name, SIZE);
 	memcpy(ret_cred_uname, a_uname,SIZE);
 	memcpy(ret_cred_pword, a_pword, SIZE);
-	struct AES_ctx ctx;
-	AES_init_ctx_iv(&ctx, key, iv);
-	AES_CTR_xcrypt_buffer(&ctx, ret_cred_web, SIZE);//*size);
-	AES_CTR_xcrypt_buffer(&ctx, ret_cred_uname, SIZE);//*size);
-	AES_CTR_xcrypt_buffer(&ctx, ret_cred_pword, SIZE);//*size);
+	xcrypt(ret_cred_web, iv_in);
+	xcrypt(ret_cred_uname, iv_in);
+	xcrypt(ret_cred_pword, iv_in);
+	
+	//struct AES_ctx ctx;
+	//AES_init_ctx_iv(&ctx, key, iv);
+	//AES_CTR_xcrypt_buffer(&ctx, ret_cred_web, SIZE);//*size);
+	//AES_CTR_xcrypt_buffer(&ctx, ret_cred_uname, SIZE);//*size);
+	//AES_CTR_xcrypt_buffer(&ctx, ret_cred_pword, SIZE);//*size);
 	/*memcpy(ret_cred_web, web_name, SIZE);
 	memcpy(ret_cred_uname, a_uname,SIZE);
 	memcpy(ret_cred_pword, a_pword, SIZE);
