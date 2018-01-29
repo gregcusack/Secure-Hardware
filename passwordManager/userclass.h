@@ -3,11 +3,6 @@
 #define IV_SIZE 16
 #include <stdint.h>
 
-#ifndef PTHREAD_H
-#define PTHREAD_H
-#include <pthread.h>
-#endif
-
 typedef struct web_login { //32 bytes
 	unsigned char a_uname[BUFF_SIZE]; //acount uname
 	unsigned char a_pword[BUFF_SIZE];

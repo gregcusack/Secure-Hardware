@@ -6,10 +6,10 @@
 #include "userclass.h"
 #endif
 
- #ifndef MBSIDE_H
- #define MBSIDE_H
- #include "mbside.h"
- #endif
+#ifndef MBSIDE_H
+#define MBSIDE_H
+#include "mbside.h"
+#endif
 //#include "arm_protocol_header.h"
 //#include "enclave_library.h"
 
@@ -222,6 +222,21 @@ int main(int argc, char** argv) {
 				begin = clock();
 
 				for(i=0; i<vault.num_accounts; i++) {
+					new_decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
+						vault.accounts[i].credentials.a_uname,
+						vault.accounts[i].credentials.a_pword,
+						vault.accounts[i].web_iv, tmp_name, size,
+						user_ret.web_name, user_ret.credentials.a_uname,
+						user_ret.credentials.a_pword, &cred_found);
+				}
+				end = clock();
+				read_time = ((double)end-begin)/CLOCKS_PER_SEC;
+				if(!cred_found) {
+					fprintf(stderr, "ERROR: Data not found\n");
+					return 0;
+				}
+				/*
+				for(i=0; i<vault.num_accounts; i++) {
 					decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
 						vault.accounts[i].web_iv, tmp_name, size, &cred_found);
 					if(cred_found)
@@ -242,6 +257,7 @@ int main(int argc, char** argv) {
 					fprintf(stderr, "ERROR: Data not found\n");
 					return 0;
 				}
+				*/
 				printf("%d,%f,%f\n", k, create_time, read_time);
 			}
 		}
