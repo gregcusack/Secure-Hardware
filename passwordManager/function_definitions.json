@@ -6,7 +6,7 @@
         {
           "name":"create_pw",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"size",
@@ -23,7 +23,7 @@
         {
           "name":"cipher_pw",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"master_iv_out",
@@ -38,7 +38,7 @@
         {
           "name":"login_attempt",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"size",
@@ -46,9 +46,9 @@
           "length":4
         },
         {
-          "name":"cipher_date",
+          "name":"cipher_data",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"master_iv",
@@ -65,12 +65,22 @@
       ]
     },
     {
-      "name" : "decrypt_and_check_for_web_credentials",
+      "name" : "check_and_return_credentials",
       "inputs" : [
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":64
+          "length":256
+        },
+        {
+          "name":"web_uname",
+          "type":"unsigned char",
+          "length":256
+        },
+        {
+          "name":"web_pword",
+          "type":"unsigned char",
+          "length":256
         },
         {
           "name":"iv_in",
@@ -80,44 +90,7 @@
         {
           "name":"user_cred_get",
           "type":"unsigned char",
-          "length":64
-        },
-        {
-          "name":"size",
-          "type":"unsigned int",
-          "length":4
-        }
-      ],
-      "outputs" : [
-        {
-          "name":"cred_found",
-          "type":"unsigned int",
-          "length":4
-        }
-      ]
-    },
-    {
-      "name" : "return_credentials",
-      "inputs" : [
-        {
-          "name":"web_name",
-          "type":"unsigned char",
-          "length":64
-        },
-        {
-          "name":"a_uname",
-          "type":"unsigned char",
-          "length":64
-        },
-        {
-          "name":"a_pword",
-          "type":"unsigned char",
-          "length":64
-        },
-        {
-          "name":"iv_in",
-          "type":"unsigned char",
-          "length":16
+          "length":256
         },
         {
           "name":"size",
@@ -129,19 +102,23 @@
         {
           "name":"ret_cred_web",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"ret_cred_uname",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"ret_cred_pword",
           "type":"unsigned char",
-          "length":64
+          "length":256
+        },
+        {
+          "name":"found",
+          "type":"unsigned int",
+          "length":4
         }
-
       ]
     },
     {
@@ -150,17 +127,17 @@
         {
           "name":"web_name",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"a_uname",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"a_pword",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"size",
@@ -177,17 +154,17 @@
         {
           "name":"cipher_web_name",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"cipher_a_uname",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"cipher_a_pword",
           "type":"unsigned char",
-          "length":64
+          "length":256
         },
         {
           "name":"iv_out",
