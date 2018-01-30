@@ -25,14 +25,11 @@ void xcrypt(unsigned char *in_str, unsigned char *_iv) {
 	AES_CTR_xcrypt_buffer(&ctx, in_str, BUFF_SIZE);
 }
 
+/*
 unsigned int compare(unsigned char *input, unsigned char *decrypted) {
-	for(unsigned int i = 0; i < BUFF_SIZE; i++) {
-		if(input[i] != decrypted[i]) {
-			return 0;
-		}
-	}
-	return 1;
+	return (!strncmp((char*)input, (char*)decrypted,BUFF_SIZE));
 }
+*/
 
 void create_user(unsigned char *create_pw, unsigned int *size, 
 	unsigned char *master_iv_in, unsigned char *cipher_pw, 
@@ -48,7 +45,8 @@ void check_user(unsigned char *login_attempt, unsigned int *size,
 	unsigned char tmp[BUFF_SIZE];
 	memcpy(tmp, cipher_data, BUFF_SIZE);
 	xcrypt(tmp, master_iv);
-	*found = compare(login_attempt,tmp);
+	*found = !strncmp((char*)login_attempt, (char*)tmp, BUFF_SIZE);
+	//*found = compare(login_attempt,tmp);
 }
 
 //return cred_found
@@ -58,7 +56,8 @@ void decrypt_and_check_for_web_credentials(unsigned char *web_name,
 	unsigned char tmp[BUFF_SIZE];
 	memcpy(tmp, web_name, BUFF_SIZE);
 	xcrypt(tmp, iv_in);
-	*found = compare(user_cred_get,tmp);
+	*found = !strncmp((char*)user_cred_get, (char*)tmp, BUFF_SIZE);
+	//*found = compare(user_cred_get,tmp);
 }
 
 //return cipher_web_name/uname/pword
@@ -94,10 +93,10 @@ void new_decrypt_and_check_for_web_credentials(unsigned char *web_name,
 	unsigned char *iv_in, unsigned char *user_cred_get, unsigned int *size, 
 	unsigned char *ret_cred_web, unsigned char *ret_cred_uname,
 	unsigned char *ret_cred_pword, unsigned int *found) {
-	unsigned char tmp[BUFF_SIZE];
-	memcpy(tmp, web_name, BUFF_SIZE);
-	xcrypt(tmp, iv_in);
-	if(compare(user_cred_get,tmp)) {
+	unsigned char tmp_web_name[BUFF_SIZE];
+	memcpy(tmp_web_name, web_name, BUFF_SIZE);
+	xcrypt(tmp_web_name, iv_in);
+	if(!strncmp((char*)user_cred_get, (char*)tmp_web_name, BUFF_SIZE)) {
 		memcpy(ret_cred_web, web_name, BUFF_SIZE);
 		memcpy(ret_cred_uname, web_uname, BUFF_SIZE);
 		memcpy(ret_cred_pword, web_pword, BUFF_SIZE);

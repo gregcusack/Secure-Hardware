@@ -150,38 +150,25 @@ int main(int argc, char** argv) {
 		printf("Vault full\n");
 		return 0;
 	}
-	//create_account(create_pw);
 	gen_random_password(create_pw, BUFF_SIZE);
 	memcpy(login_password_test, create_pw, BUFF_SIZE);
-	//printf("login_password_test_before_encrypt: %s\n", login_password_test);
-	//printf("create_pw_before_encrypt: %s\n", create_pw);
-	/*for(i=0;i<BUFF_SIZE;i++) {
-		login_password_test[i] = create_pw[i];
-	}*/
 	create_user(create_pw, size, iv_in, cipher_pw, master_iv_out);
-	//printf("create_pw_after_create: %s\n", create_pw);
-	//printf("Initial IV gen: %s\n", master_iv_out);
 
-	if(!vault_store_user(&vault, cipher_pw, size, master_iv_out)) { //must wait for lock before calling this
+	if(!vault_store_user(&vault, cipher_pw, size, master_iv_out)) {
 		printf("bad store!\n");
 		exit(1);
 	}
-	//printf("Use to store IV: %s\n", master_iv_out);
-	//printf("create_pw_after_store: %s\n", create_pw);
-	//write_vault(&vault);
+
 	unsigned int found = false;
-	//check_user(login_attempt, size, vault.m_pword, vault.m_iv, &found);
-	//printf("login_password_test: %s\n", login_password_test);
-	//printf("create_pw: %s\n", create_pw);
+
 	check_user(login_password_test, size, vault.m_pword, vault.m_iv, &found);
-	//printf("Used to check and decrypt IV: %s\n", vault.m_iv);
 	if(!found)
 		return 0;
 	printf("Found!\n");
 
 	/******** AFTER LOGIN ********/
 	clock_t begin, end;	
-	unsigned char current_name[BUFF_SIZE];
+	unsigned char current_web[BUFF_SIZE];
 	unsigned char current_user[BUFF_SIZE];
 	unsigned char current_password[BUFF_SIZE];
 	unsigned char tmp_name[BUFF_SIZE];
@@ -192,11 +179,11 @@ int main(int argc, char** argv) {
 	printf("PASSWORD_SIZE,ADD_TIME,GET_TIME\n");
 	for(k = 4; k < BUFF_SIZE; k+=4) {
 		for(itr = 0; itr < ITERATIONS; itr++) {
-			memset(current_name, 0, BUFF_SIZE);
+			memset(current_web, 0, BUFF_SIZE);
 	        memset(tmp_name, 0, BUFF_SIZE);
 	        memset(current_user, 0, BUFF_SIZE);
 	        memset(current_password, 0, BUFF_SIZE);
-	        sprintf((char*)current_name, "test%d_%d", itr,k);
+	        sprintf((char*)current_web, "test%d_%d", itr,k);
 			sprintf((char*)tmp_name, "test%d_%d", itr,k);
 			sprintf((char*)current_user, "user%d_%d", itr,k);
 			gen_random_password(current_password, k);
@@ -205,7 +192,7 @@ int main(int argc, char** argv) {
 			uint32_t cred_found = false;
 			if(vault.num_accounts < MAX_ACCOUNTS) {
 				begin = clock();
-				encrypt_credentials(current_name, current_user,
+				encrypt_credentials(current_web, current_user,
 					current_password, size, iv_in,
 					encrypted_user_cred.web_name,
 					encrypted_user_cred.credentials.a_uname,
@@ -228,36 +215,15 @@ int main(int argc, char** argv) {
 						vault.accounts[i].web_iv, tmp_name, size,
 						user_ret.web_name, user_ret.credentials.a_uname,
 						user_ret.credentials.a_pword, &cred_found);
-				}
-				end = clock();
-				read_time = ((double)end-begin)/CLOCKS_PER_SEC;
-				if(!cred_found) {
-					fprintf(stderr, "ERROR: Data not found\n");
-					return 0;
-				}
-				/*
-				for(i=0; i<vault.num_accounts; i++) {
-					decrypt_and_check_for_web_credentials(vault.accounts[i].web_name,
-						vault.accounts[i].web_iv, tmp_name, size, &cred_found);
 					if(cred_found)
 						break;
 				}
-				if(cred_found) {
-					return_credentials(vault.accounts[i].web_name,
-						vault.accounts[i].credentials.a_uname,
-						vault.accounts[i].credentials.a_pword,
-						vault.accounts[i].web_iv,
-						size,
-						user_ret.web_name, user_ret.credentials.a_uname,
-						user_ret.credentials.a_pword);
-				}
 				end = clock();
 				read_time = ((double)end-begin)/CLOCKS_PER_SEC;
 				if(!cred_found) {
 					fprintf(stderr, "ERROR: Data not found\n");
 					return 0;
 				}
-				*/
 				printf("%d,%f,%f\n", k, create_time, read_time);
 			}
 		}

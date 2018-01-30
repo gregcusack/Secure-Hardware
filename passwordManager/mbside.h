@@ -10,7 +10,7 @@
 
 #ifndef AES_H
 #define AES_H
-#include "tiny-AES-c/aes.h"
+#include "aes.h"
 #endif
 
 void create_user(unsigned char *create_pw, unsigned int *size, 
