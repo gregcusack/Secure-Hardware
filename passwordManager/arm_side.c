@@ -10,8 +10,8 @@
 #define MBSIDE_H
 #include "mbside.h"
 #endif
-//#include "arm_protocol_header.h"
-//#include "enclave_library.h"
+#include "arm_protocol_header.h"
+#include "enclave_library.h"
 
 #ifndef VAULT_H
 #define VAULT_H
@@ -121,7 +121,7 @@ void gen_random_password(unsigned char *s, const unsigned int len) {
 
 int main(int argc, char** argv) {
 	int i,k, itr;
-	//enclave_init_with_file("password_manager.bin");
+	enclave_init_with_file("password_manager.bin");
 	remove("test.dat");
 	time_t t;
 	/*unsigned int seed;
