@@ -121,7 +121,7 @@ void gen_random_password(unsigned char *s, const unsigned int len) {
 
 int main(int argc, char** argv) {
 	int i,k, itr;
-	enclave_init_with_file("password_manager.bin");
+	//enclave_init_with_file("password_manager.bin");
 	remove("test.dat");
 	time_t t;
 	/*unsigned int seed;
@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
 			uint32_t cred_found = false;
 			if(vault.num_accounts < MAX_ACCOUNTS) {
 				begin = clock();
-				encrypt_credentials(current_web, current_user,
+				encrypt_credentials(create_pw, current_web, current_user,
 					current_password, size, iv_in,
 					encrypted_user_cred.web_name,
 					encrypted_user_cred.credentials.a_uname,
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
 				begin = clock();
 
 				for(i=0; i<vault.num_accounts; i++) {
-					check_and_return_credentials(vault.accounts[i].web_name,
+					check_and_return_credentials(create_pw, vault.accounts[i].web_name,
 						vault.accounts[i].credentials.a_uname,
 						vault.accounts[i].credentials.a_pword,
 						vault.accounts[i].web_iv, tmp_name, size,
