@@ -68,6 +68,11 @@
       "name" : "check_and_return_credentials",
       "inputs" : [
         {
+          "name":"create_pw",
+          "type":"unsigned char",
+          "length":256
+        },
+        {
           "name":"web_name",
           "type":"unsigned char",
           "length":256
@@ -124,6 +129,11 @@
     {
       "name" : "encrypt_credentials",
       "inputs" : [
+        {
+          "name":"create_pw",
+          "type":"unsigned char",
+          "length":256
+        },
         {
           "name":"web_name",
           "type":"unsigned char",
